@@ -61,4 +61,5 @@ jobs:
           SITE_URL: ${{ steps.deployment.outputs.page_url }}
         run: python scripts/verify_deployment.py --url "$SITE_URL"
       - name: Resumo do deploy
-        run: echo "URL: ${{ steps.deployment.outputs.page_url }}" >> "$GITHUB_STEP_SUMMARY"
+        run: |
+          echo "URL: ${{ steps.deployment.outputs.page_url }}" >> "$GITHUB_STEP_SUMMARY"
