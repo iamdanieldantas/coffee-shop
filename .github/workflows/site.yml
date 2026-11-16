@@ -1,0 +1,64 @@
+name: Publicar Coffee House
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: coffee-shop-pages
+  cancel-in-progress: false
+jobs:
+  validar-release:
+    name: Harness - validar
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Preparar Playwright Chromium
+        run: |
+          python -m pip install playwright==1.56.0
+          python -m playwright install --with-deps chromium
+      - name: Executar harness de qualidade
+        run: python -m harness.runner --mode release --browser
+      - name: Salvar relatório de qualidade
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-release
+          path: _reports/harness-report.json
+          if-no-files-found: warn
+  publicar:
+    name: GitHub Pages - publicar e verificar
+    needs: validar-release
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Montar artefato
+        run: python scripts/build_site.py --out _site
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: ./_site
+          name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Smoke test do site público
+        env:
+          SITE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: python scripts/verify_deployment.py --url "$SITE_URL"
+      - name: Resumo do deploy
+        run: echo "URL: ${{ steps.deployment.outputs.page_url }}" >> "$GITHUB_STEP_SUMMARY"
