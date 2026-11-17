@@ -14,7 +14,8 @@ class SiteContract(unittest.TestCase):
   self.assertIn('function renderOrders()',JS)
  def test_regression_navigation_and_carousel(self):
   self.assertIn('href="#menu" data-go="menu"',HTML)
-  self.assertIn('href="#menu" data-go="menu">Explorar o menu',JS)
+  self.assertIn('href="#menu" data-go="menu">',JS)
+  self.assertIn("t('orders.explore')",JS)
   self.assertIn("e.preventDefault();nav(go.dataset.go)",JS)
   self.assertIn("classList.add('js-ready')",JS)
   self.assertEqual(HTML.count('data-carousel-index="'),3)
@@ -87,6 +88,36 @@ class SiteContract(unittest.TestCase):
   self.assertIn('noopener noreferrer',controller)
   self.assertIn("target.protocol !== 'https:'",controller)
   self.assertNotIn('https://wa.me/55DDDNUMERO',HTML)
+ def test_i18n_contracts_and_about(self):
+  import json,re
+  from html.parser import HTMLParser
+  source=(ROOT/'assets/i18n.js').read_text()
+  match=re.search(r'const translations=(\\{.*?\\});\\s*const options=',source,re.S)
+  self.assertIsNotNone(match,'Missing three-language translations')
+  translations=json.loads(match.group(1))
+  self.assertEqual(set(translations),{'pt','en','es'})
+  keys=set(translations['pt']['strings'])
+  products=set(translations['pt']['products'])
+  categories=set(translations['pt']['categories'])
+  for lang,pack in translations.items():
+   self.assertEqual(set(pack['strings']),keys,lang)
+   self.assertEqual(set(pack['products']),products,lang)
+   self.assertEqual(set(pack['categories']),categories,lang)
+   self.assertTrue(all(item['name'] and item['desc'] for item in pack['products'].values()))
+  self.assertEqual(products,{'espresso','latte','cappuccino','coldbrew','croissant','crocafe','cookie','mocca','sanduiche'})
+  for key in re.findall(r'data-i18n(?:-html|-aria-label|-alt|-placeholder)?="([^"]+)"',HTML):
+   self.assertIn(key,keys)
+  self.assertIn('class="about-section"',HTML)
+  self.assertIn('id="site-language"',HTML)
+  for value in ('pt','en','es'):self.assertIn('value="'+value+'"',HTML)
+  self.assertIn('coffeehouse-language-v1',source)
+  self.assertIn('coffee:language-change',JS)
+  self.assertIn('function productLabel',JS)
+  self.assertIn('I18N.category(cat.id)',JS)
+  self.assertIn("t('orders.emptyTitle')",JS)
+  self.assertIn("t('likes.help')",(ROOT/'assets/likes.js').read_text().replace("tt('likes.help')","t('likes.help')"))
+  self.assertIn('qty-picker',CSS)
+  self.assertIn('class="quantity qty-picker"',JS)
  def test_assets(self):
   self.assertTrue((ROOT/'assets/app.js').is_file())
   self.assertTrue((ROOT/'assets/styles.css').is_file())
