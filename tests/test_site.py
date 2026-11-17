@@ -19,6 +19,14 @@ class SiteContract(unittest.TestCase):
   self.assertIn('brand-symbol',HTML)
   self.assertIn('Croissant e copo de café',HTML)
   self.assertIn('bottom-wrap',HTML)
+ def test_approved_logo(self):
+  import xml.etree.ElementTree as ET
+  logo=ROOT/'assets/logo-approved.svg'
+  self.assertTrue(logo.is_file())
+  svg=ET.parse(logo).getroot()
+  self.assertEqual(svg.attrib['viewBox'],'150 60 900 1170')
+  self.assertEqual(HTML.count('src="assets/logo-approved.svg"'),3)
+  self.assertIn('object-fit:contain',CSS)
  def test_assets(self):
   self.assertTrue((ROOT/'assets/app.js').is_file())
   self.assertTrue((ROOT/'assets/styles.css').is_file())
