@@ -12,11 +12,11 @@ import urllib.request
 ROOT = Path(__file__).resolve().parents[1]
 config = (ROOT / "assets/likes-config.js").read_text(encoding="utf-8")
 def setting(name):
-    match = re.search(r"\\b" + name + r"\\s*:\\s*'([^']*)'", config)
+    match = re.search(name + " *: *'([^']*)'", config)
     return match.group(1) if match else ""
 url = setting("supabaseUrl").rstrip("/")
 key = setting("publishableKey")
-assert re.fullmatch(r"https://[a-z0-9-]+\\.supabase\\.co", url), "Missing Supabase URL"
+assert re.fullmatch(r"https://[a-z0-9-]+[.]supabase[.]co", url), "Missing Supabase URL"
 assert key.startswith("sb_publishable_"), "Only the public publishable key is allowed"
 request = urllib.request.Request(
     url + "/rest/v1/rpc/coffee_likes_snapshot",
