@@ -144,8 +144,63 @@ try:
                 if width < 760:
                     assert footer_end['y'] + footer_end['height'] < nav_start['y']
                 page.evaluate('window.scrollTo(0, 0)')
+            # PT-BR is the default; language changes must not alter IDs, cart or navigation.
+            assert page.locator('#site-language').input_value() == 'pt'
+            assert page.locator('html').get_attribute('lang') == 'pt-BR'
+            assert page.locator('#sobre-nos').count() == 1
+            assert page.locator('#pedidos .quantity.qty-picker').count() == 1
+            menu_qty_style = page.locator('#menu [data-qty-slot="latte"] .qty-picker button').first.evaluate(
+                "el => ({width:getComputedStyle(el).width, height:getComputedStyle(el).height, icon:getComputedStyle(el.querySelector('svg')).width})"
+            )
+            order_qty_style = page.locator('#pedidos .quantity.qty-picker button').first.evaluate(
+                "el => ({width:getComputedStyle(el).width, height:getComputedStyle(el).height, icon:getComputedStyle(el.querySelector('svg')).width})"
+            )
+            assert order_qty_style == menu_qty_style, (order_qty_style, menu_qty_style)
+            assert page.locator('#pedidos .quantity span').inner_text() == '1'
+            page.locator('#site-language').select_option('en')
+            assert page.locator('html').get_attribute('lang') == 'en-US'
+            assert page.locator('#pedidos .page-title').inner_text() == 'Orders'
+            assert page.locator('#order-list h3').first.inner_text() == 'Classic Latte'
+            assert page.locator('#pedidos .quantity span').inner_text() == '1'
+            assert page.locator('nav [data-go="pedidos"] span[data-i18n="nav.orders"]').inner_text() == 'Orders'
+            page.locator('nav [data-go="menu"]').click()
+            assert_page(page, 'menu')
+            assert page.locator('#menu .category').first.inner_text() == 'Drinks'
+            assert page.locator('#menu [data-qty-slot="latte"] output').inner_text() == '1'
+            assert page.locator('#menu .product h3').first.count() == 1
+            assert page.locator('#menu').get_attribute('aria-label') == 'Menu page'
+            page.locator('nav [data-go="home"]').click()
+            assert_page(page, 'home')
+            assert page.locator('#sobre-nos #about-heading').inner_text() == 'A little getaway in every cup.'
+            assert page.locator('footer .footer-social-section h3').inner_text() == 'Stay in touch'
+            assert page.locator('footer .social-meta').first.inner_text() == 'Coming soon'
+            assert page.locator('#home .featured [data-qty-slot="latte"] output').inner_text() == '1'
+            page.locator('#site-language').select_option('es')
+            assert page.locator('html').get_attribute('lang') == 'es-AR'
+            assert page.locator('#sobre-nos #about-heading').inner_text() == 'Una pausa con sabor a viaje.'
+            assert page.locator('#home .home-text h1').inner_text().startswith('Café, medialunas')
+            assert page.locator('nav [data-go="home"] span[data-i18n="nav.home"]').inner_text() == 'Inicio'
+            page.locator('nav [data-go="pedidos"]').click()
+            assert_page(page, 'pedidos')
+            assert page.locator('#order-list h3').first.inner_text() == 'Latte clásico'
+            assert page.locator('#pedidos .quantity span').inner_text() == '1'
+            page.locator('#coupon-trigger').click()
+            page.locator('#coupon-input').fill('CAFE10')
+            page.locator('#apply-coupon').click()
+            assert 'Descuento (10%)' in page.locator('#order-summary').inner_text()
+            assert page.locator('#cart-badge').inner_text() == '1'
+            page.reload(wait_until='load')
+            assert page.locator('#site-language').input_value() == 'es'
+            assert page.locator('html').get_attribute('lang') == 'es-AR'
+            assert_page(page, 'pedidos')
+            assert page.locator('#pedidos .quantity span').inner_text() == '1'
+            assert page.locator('#order-list h3').first.inner_text() == 'Latte clásico'
+            page.locator('#site-language').select_option('pt')
+            assert page.locator('html').get_attribute('lang') == 'pt-BR'
+            assert page.locator('#order-list h3').first.inner_text() == 'Latte Clássico'
+            assert page.locator('#pedidos .quantity span').inner_text() == '1'
             assert not errors, errors
-            print(f'OK browser {width}x{height}: nav, cart, likes, carousel and 4-channel footer', flush=True)
+            print(f'OK browser {width}x{height}: PT/EN/ES translation, About Us, matching quantity icons, persistence, navigation, coupon, cart and footer', flush=True)
             context.close()
             browser.close()
 

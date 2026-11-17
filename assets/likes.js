@@ -4,6 +4,7 @@
  */
 (() => {
   'use strict';
+  const tt = (key,args) => window.CoffeeI18n.t(key,args);
   const raw = window.COFFEE_LIKES_CONFIG || {};
   const url = String(raw.supabaseUrl || '').replace(/\/+$/, '');
   const key = String(raw.publishableKey || '');
@@ -39,14 +40,14 @@
         signal: controller.signal
       });
       const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.message || data?.msg || data?.error_description || data?.error || 'Serviço indisponível');
+      if (!res.ok) throw new Error(data?.message || data?.msg || data?.error_description || data?.error || tt('likes.service'));
       return data;
     } finally {
       clearTimeout(timeout);
     }
   }
   function tokenRecord(rawSession) {
-    if (!rawSession?.access_token || !rawSession?.refresh_token) throw new Error('Não foi possível iniciar a sessão anônima');
+    if (!rawSession?.access_token || !rawSession?.refresh_token) throw new Error(tt('likes.session'));
     const expires = Number(rawSession.expires_at || (Math.floor(Date.now() / 1000) + Number(rawSession.expires_in || 3600)));
     return { access_token: rawSession.access_token, refresh_token: rawSession.refresh_token, expires_at: expires };
   }
@@ -71,18 +72,18 @@
   function liked(id) { return !!counts.get(id)?.liked; }
   function notify() { window.dispatchEvent(new CustomEvent('coffee:likes-update')); }
   function statusText() {
-    if (!configured) return 'Curtidas aguardando ativação. Nenhum total foi simulado.';
-    if (!available) return message || 'Carregando curtidas...';
-    return 'Uma curtida por visitante neste navegador. Os totais são compartilhados entre visitantes.';
+    if (!configured) return tt('likes.unavailable');
+    if (!available) return message ? tt(message) : tt('likes.loading');
+    return tt('likes.help');
   }
   function button(product) {
     const id = product.id;
     const active = liked(id), pending = busy.has(id);
     const disabled = !configured || !available || pending;
-    const label = active ? 'Remover curtida de' : 'Curtir';
-    const title = !configured ? 'Curtidas disponíveis após ativação do banco de dados'
-      : !available ? 'Aguardando conexão com o serviço de curtidas' : label + ' ' + product.name;
-    const number = available ? count(id).toLocaleString('pt-BR') : '—';
+    const label = tt(active ? 'likes.unlike' : 'likes.like', {name: product.name});
+    const title = !configured ? tt('likes.setup')
+      : !available ? tt('likes.wait') : label;
+    const number = available ? count(id).toLocaleString(window.CoffeeI18n.localeTag()) : '—';
     return '<button type="button" class="like-button' + (active ? ' is-liked' : '') +
       '" data-like="' + id + '" aria-label="' + title.replaceAll('"', '&quot;') + '"' +
       ' aria-pressed="' + active + '" title="' + title.replaceAll('"', '&quot;') + '"' +
@@ -107,7 +108,7 @@
         available = true; message = '';
       } catch (_) {
         // Never present locally guessed likes as shared totals.
-        available = false; message = 'Não foi possível consultar as curtidas. Tente novamente mais tarde.';
+        available = false; message = 'likes.loadError';
       } finally { notify(); }
     })();
     try { await currentRequest; } finally { currentRequest = null; }
@@ -121,8 +122,8 @@
       await call('/rest/v1/rpc/coffee_toggle_like', { p_product_id: id }, token);
       await refresh();
     } catch (_) {
-      message = 'Não foi possível salvar a curtida. Tente novamente.';
-      window.CoffeeLikes.onError?.(message);
+      message = 'likes.saveError';
+      window.CoffeeLikes.onError?.(tt(message));
     } finally { busy.delete(id); notify(); }
   }
   document.addEventListener('click', event => {
