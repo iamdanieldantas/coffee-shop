@@ -111,7 +111,7 @@ class SiteContract(unittest.TestCase):
   for value in ('pt','en','es'):self.assertIn('value="'+value+'"',HTML)
   self.assertIn('coffeehouse-language-v1',source)
   self.assertIn('coffee:language-change',JS)
-  self.assertIn('function productLabel',JS)
+  self.assertIn('const productLabel=',JS)
   self.assertIn('I18N.category(cat.id)',JS)
   self.assertIn("t('orders.emptyTitle')",JS)
   self.assertIn("t('likes.help')",(ROOT/'assets/likes.js').read_text().replace("tt('likes.help')","t('likes.help')"))
