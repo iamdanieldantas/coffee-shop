@@ -76,3 +76,29 @@
 .featured .product-qty-slot{margin-left:auto}
 .product .like-button{margin-top:10px}
 @media(max-width:350px){.product{grid-template-columns:84px minmax(0,1fr)}.product-price-row{gap:8px 4px}}
+
+/* Footer social and contact section: visible on Home, Menu and Pedidos. */
+.site-footer{position:relative;background:linear-gradient(145deg,#0a3926 0%,#062c1d 55%,#002519 100%);color:#fff7e9;border-top:2px solid var(--copper);padding:43px 20px calc(136px + env(safe-area-inset-bottom));}
+.site-footer-inner{max-width:1110px;margin:0 auto}
+.footer-eyebrow{font-size:10px;letter-spacing:.17em;font-weight:800;color:#dab18b}
+.footer-intro h2{font-size:clamp(27px,5vw,42px);line-height:1.14;margin:13px 0 12px;max-width:520px}
+.footer-intro>p:last-child{max-width:480px;color:#d8e5d8;line-height:1.65;font-size:13px}
+.footer-social-section{margin-top:32px}
+.footer-social-section h3{font-size:14px;letter-spacing:.01em;font-weight:750;margin-bottom:14px;color:#ffeddb}
+.footer-social-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.social-link{min-width:0;min-height:78px;border:1px solid #d9bd912e;border-radius:16px;background:#ffffff0d;padding:12px 10px;display:flex;align-items:center;gap:10px;color:#fff9ed;text-decoration:none}
+.social-link .social-icon{width:34px;height:34px;flex:none;display:grid;place-items:center;border-radius:11px;background:#d59a6030;color:#eec49e}
+.social-link .social-icon svg{width:22px;height:22px}
+.social-labels{display:flex;flex-direction:column;gap:5px;min-width:0}
+.social-name{font-size:12px;font-weight:750;white-space:nowrap}
+.social-meta{font-size:10px;color:#d8c7b0;white-space:nowrap}
+.social-arrow{margin-left:auto;width:15px;height:15px;opacity:0;flex:none}
+.social-link.is-pending{opacity:.73;cursor:default}
+.social-link.is-ready{border-color:#d6b88965;background:#ffffff14;transition:background .16s,border-color .16s,transform .16s}
+.social-link.is-ready .social-arrow{opacity:.85}
+.social-link.is-ready:hover{background:#e4b17a25;border-color:#f4c89d;transform:translateY(-2px)}
+.social-link.is-ready:focus-visible{outline:3px solid #f2b97a;outline-offset:3px}
+.footer-bottom{border-top:1px solid #ffffff25;margin-top:29px;padding-top:20px;display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:space-between;color:#c7d5c8;font-size:11px;line-height:1.6}
+@media(min-width:760px){.site-footer{padding:58px 36px 140px}.site-footer-inner{display:grid;grid-template-columns:minmax(0,.9fr) minmax(430px,1.1fr);gap:30px 60px}.footer-social-section{margin:0}.footer-social-grid{gap:12px}.social-link{min-height:85px;padding:13px}.footer-bottom{grid-column:1/-1;margin-top:8px}.social-name{font-size:14px}.social-meta{font-size:11px}}
+@media(max-width:350px){.site-footer{padding-left:15px;padding-right:15px}.social-link{gap:7px;padding:9px 7px;min-height:72px}.social-link .social-icon{width:30px;height:30px}.social-link .social-icon svg{width:19px;height:19px}.social-name{font-size:11px}}
+@media(prefers-reduced-motion:reduce){.social-link.is-ready{transition:none}}
