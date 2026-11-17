@@ -90,11 +90,10 @@ class SiteContract(unittest.TestCase):
   self.assertNotIn('https://wa.me/55DDDNUMERO',HTML)
  def test_i18n_contracts_and_about(self):
   import json,re
-  from html.parser import HTMLParser
   source=(ROOT/'assets/i18n.js').read_text()
-  match=re.search(r'const translations=(\\{.*?\\});\\s*const options=',source,re.S)
-  self.assertIsNotNone(match,'Missing three-language translations')
-  translations=json.loads(match.group(1))
+  start=source.index('const translations=')+len('const translations=')
+  end=source.index(';\n const options=',start)
+  translations=json.loads(source[start:end])
   self.assertEqual(set(translations),{'pt','en','es'})
   keys=set(translations['pt']['strings'])
   products=set(translations['pt']['products'])
