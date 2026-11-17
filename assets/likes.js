@@ -34,7 +34,7 @@
     try {
       const res = await fetch(url + path, {
         method: 'POST',
-        headers: { 'apikey': key, 'Authorization': 'Bearer ' + bearer, 'Content-Type': 'application/json' },
+        headers: { 'apikey': key, 'Content-Type': 'application/json', ...(bearer !== key ? { 'Authorization': 'Bearer ' + bearer } : {}) },
         body: JSON.stringify(body),
         signal: controller.signal
       });
@@ -56,7 +56,7 @@
     if (session && session.refresh_token) {
       try {
         persist(tokenRecord(await call('/auth/v1/token?grant_type=refresh_token',
-          { refresh_token: session.refresh_token }, session.access_token)));
+          { refresh_token: session.refresh_token }, key)));
         return session.access_token;
       } catch (_) {
         persist(null); // Invalid or expired anonymous session; never reuse a rejected token.
