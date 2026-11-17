@@ -24,13 +24,19 @@
     const link = document.createElement('a');
     link.className = 'social-link is-ready';
     link.setAttribute('data-social', service);
-    link.setAttribute('aria-label', 'Abrir ' + labels[service] + ' do Coffee House em nova aba');
+    link.setAttribute('aria-label', window.CoffeeI18n.t('aria.openSocial', {service: labels[service]}));
     link.href = address;
     link.target = '_blank';
     link.rel = 'noopener noreferrer';
     while (placeholder.firstChild) link.appendChild(placeholder.firstChild);
     const meta = link.querySelector('.social-meta');
-    if (meta) meta.textContent = service === 'whatsapp' ? 'Conversar' : 'Acessar';
+    if (meta) { meta.dataset.i18n = service === 'whatsapp' ? 'footer.chat' : 'footer.open'; meta.textContent = window.CoffeeI18n.t(meta.dataset.i18n); }
     placeholder.replaceWith(link);
+  });
+  window.addEventListener('coffee:language-change', function () {
+    document.querySelectorAll('a.social-link[data-social]').forEach(function (link) {
+      const name = labels[link.dataset.social];
+      if (name) link.setAttribute('aria-label', window.CoffeeI18n.t('aria.openSocial', {service:name}));
+    });
   });
 })();
