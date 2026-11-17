@@ -73,15 +73,53 @@ function renderMenu(){
  if(sortByLikes&&likes.available())prods.sort((a,b)=>likes.count(b.id)-likes.count(a.id));
  $('menu-items').innerHTML=`<div class="menu-sort"><span>${t('menu.sort')}</span><button type="button" data-sort-likes aria-pressed="${sortByLikes}" ${!likes.available()?'disabled':''} >${sortByLikes?'✓ ':''}${t('menu.popular')}</button></div><section class="menu-section"><h2 class="serif">${I18N.category(selectedCategory)}</h2><div class="menu-items">${prods.map(itemCard).join('')}</div></section>`;
 }
-function renderOrders(){let ids=Object.keys(cart);if(!ids.length){couponApplied=false;$('order-list').innerHTML=`<div class="empty">${ICONS.bag}<h3 class="serif">Sua sacola está vazia</h3><p>Escolha seus favoritos no Menu e prepare seu pedido para retirada.</p><a class="cta" href="#menu" data-go="menu">Explorar o menu</a></div>`;$('order-summary').innerHTML='<div class="summary-line"><span>Subtotal</span><strong>R$ 0,00</strong></div><div class="total-line"><span>Total</span><strong>R$ 0,00</strong></div><button class="confirm" type="button" disabled>Escolha um produto</button>';return}
- $('order-list').innerHTML=ids.map(id=>{const p=byId(id);return `<div class="order-row"><img src="${IMAGES[p.img]}" alt="${p.name}"><div><h3>${p.name}</h3><p>${format(p.price)}</p></div><div class="quantity"><button type="button" data-change="${id}" data-diff="-1" aria-label="Diminuir ${p.name}">${ICONS.minus}</button><span aria-label="Quantidade">${cart[id]}</span><button type="button" data-change="${id}" data-diff="1" aria-label="Aumentar ${p.name}" ${cart[id]>=MAX_QUANTITY?'disabled':''}>${ICONS.plus}</button></div></div>`}).join('');let subtotal=ids.reduce((sum,id)=>sum+byId(id).price*cart[id],0),discount=couponApplied?Math.round(subtotal*.1):0,total=subtotal-discount;
- $('order-summary').innerHTML=`<div class="summary-line"><span>Subtotal</span><span>${format(subtotal)}</span></div><button class="coupon-trigger" type="button" id="coupon-trigger"><span class="coupon-left">${ICONS.tag}<span>${couponApplied?'Cupom CAFE10 aplicado':'Cupom de desconto'}</span></span>${ICONS.chevron}</button><div class="coupon-body" id="coupon-body"><input aria-label="Código do cupom" placeholder="Digite um cupom" id="coupon-input" maxlength="24" autocomplete="off"><button id="apply-coupon" type="button">Aplicar</button></div><p class="coupon-error" id="coupon-error">Use o cupom demonstrativo CAFE10.</p>${couponApplied?`<div class="summary-line"><span>Desconto (10%)</span><span>− ${format(discount)}</span></div>`:''}<div class="total-line"><span>Total</span><span>${format(total)}</span></div><button class="confirm" type="button" id="checkout">${ICONS.bag}Confirmar pedido (retirada)</button>`;
+
+function renderOrders(){
+ const ids=Object.keys(cart);
+ if(!ids.length){
+  couponApplied=false;
+  $('order-list').innerHTML=`<div class="empty">${ICONS.bag}
+   <h3 class="serif">${t('orders.emptyTitle')}</h3>
+   <p>${t('orders.emptyDescription')}</p>
+   <a class="cta" href="#menu" data-go="menu">${t('orders.explore')}</a></div>`;
+  $('order-summary').innerHTML=`<div class="summary-line"><span>${t('orders.subtotal')}</span><strong>${format(0)}</strong></div>
+   <div class="total-line"><span>${t('orders.total')}</span><strong>${format(0)}</strong></div>
+   <button class="confirm" type="button" disabled>${t('orders.choose')}</button>`;
+  return;
+ }
+ $('order-list').innerHTML=ids.map(id=>{
+  const p=productLabel(byId(id));
+  return `<div class="order-row"><img src="${IMAGES[p.img]}" alt="${p.name}">
+   <div><h3>${p.name}</h3><p>${format(p.price)}</p></div>
+   <div class="quantity qty-picker" role="group" aria-label="${t('qty.label',{name:p.name})}">
+    <button type="button" data-change="${id}" data-diff="-1" aria-label="${t('qty.down',{name:p.name})}">${ICONS.minus}</button>
+    <span aria-label="${t('qty.count')}">${cart[id]}</span>
+    <button type="button" data-change="${id}" data-diff="1" aria-label="${t('qty.up',{name:p.name})}" ${cart[id]>=MAX_QUANTITY?'disabled':''}>${ICONS.plus}</button>
+   </div></div>`
+ }).join('');
+ const subtotal=ids.reduce((sum,id)=>sum+byId(id).price*cart[id],0);
+ const discount=couponApplied?Math.round(subtotal*.1):0;
+ const total=subtotal-discount;
+ $('order-summary').innerHTML=`
+  <div class="summary-line"><span>${t('orders.subtotal')}</span><span>${format(subtotal)}</span></div>
+  <button class="coupon-trigger" type="button" id="coupon-trigger">
+   <span class="coupon-left">${ICONS.tag}<span>${t(couponApplied?'orders.couponApplied':'orders.coupon')}</span></span>${ICONS.chevron}
+  </button>
+  <div class="coupon-body" id="coupon-body">
+   <input aria-label="${t('orders.coupon')}" placeholder="${t('orders.couponPlaceholder')}" id="coupon-input" maxlength="24" autocomplete="off">
+   <button id="apply-coupon" type="button">${t('orders.apply')}</button>
+  </div>
+  <p class="coupon-error" id="coupon-error">${t('orders.couponError')}</p>
+  ${couponApplied?`<div class="summary-line"><span>${t('orders.discount')}</span><span>− ${format(discount)}</span></div>`:''}
+  <div class="total-line"><span>${t('orders.total')}</span><span>${format(total)}</span></div>
+  <button class="confirm" type="button" id="checkout">${ICONS.bag}${t('orders.confirm')}</button>`;
 }
 window.addEventListener('hashchange',()=>nav(location.hash.slice(1)||'home',false));
 window.addEventListener('popstate',()=>nav(location.hash.slice(1)||'home',false));
 // Event delegation keeps all controls working after menu and cart updates.
-document.addEventListener('click',e=>{const go=e.target.closest('[data-go]');if(go){e.preventDefault();nav(go.dataset.go);return}const dot=e.target.closest('[data-carousel-index]');if(dot){setCarouselSlide(Number(dot.dataset.carouselIndex));syncCarouselPlayback();return}const addBtn=e.target.closest('[data-add]');if(addBtn){add(addBtn.dataset.add);return}const cat=e.target.closest('[data-category]');if(cat){selectedCategory=cat.dataset.category;renderMenu();return}if(e.target.closest('[data-sort-likes]')){sortByLikes=!sortByLikes;renderMenu();return}const qty=e.target.closest('[data-change]');if(qty){change(qty.dataset.change,Number(qty.dataset.diff));return}if(e.target.closest('#coupon-trigger')){$('coupon-body')?.classList.toggle('open');return}if(e.target.closest('#apply-coupon')){const value=($('coupon-input').value||'').trim().toUpperCase();if(value==='CAFE10'){couponApplied=true;renderOrders();toast('Cupom de 10% aplicado')}else{$('coupon-error').style.display='block'}return}if(e.target.closest('#checkout')){$('checkout-modal').classList.add('show');return}if(e.target.closest('#close-modal')){ $('checkout-modal').classList.remove('show');nav('home');return}if(e.target.id==='checkout-modal'){$('checkout-modal').classList.remove('show')}});
+document.addEventListener('click',e=>{const go=e.target.closest('[data-go]');if(go){e.preventDefault();nav(go.dataset.go);return}const dot=e.target.closest('[data-carousel-index]');if(dot){setCarouselSlide(Number(dot.dataset.carouselIndex));syncCarouselPlayback();return}const addBtn=e.target.closest('[data-add]');if(addBtn){add(addBtn.dataset.add);return}const cat=e.target.closest('[data-category]');if(cat){selectedCategory=cat.dataset.category;renderMenu();return}if(e.target.closest('[data-sort-likes]')){sortByLikes=!sortByLikes;renderMenu();return}const qty=e.target.closest('[data-change]');if(qty){change(qty.dataset.change,Number(qty.dataset.diff));return}if(e.target.closest('#coupon-trigger')){$('coupon-body')?.classList.toggle('open');return}if(e.target.closest('#apply-coupon')){const value=($('coupon-input').value||'').trim().toUpperCase();if(value==='CAFE10'){couponApplied=true;renderOrders();toast(t('toast.coupon'))}else{$('coupon-error').style.display='block'}return}if(e.target.closest('#checkout')){$('checkout-modal').classList.add('show');return}if(e.target.closest('#close-modal')){ $('checkout-modal').classList.remove('show');nav('home');return}if(e.target.id==='checkout-modal'){$('checkout-modal').classList.remove('show')}});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')$('checkout-modal').classList.remove('show')});
 window.CoffeeLikes.onError=message=>toast(message);
 window.addEventListener('coffee:likes-update',()=>{renderFeatured();renderMenu()});
+window.addEventListener('coffee:language-change',()=>{renderFeatured();renderMenu();renderOrders();});
 renderFeatured();renderMenu();renderOrders();updateBadge();document.documentElement.classList.add('js-ready');nav(location.hash.slice(1)||'home',false);window.CoffeeLikes.init();
