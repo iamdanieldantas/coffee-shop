@@ -102,3 +102,30 @@
 @media(min-width:760px){.site-footer{padding:58px 36px 140px}.site-footer-inner{display:grid;grid-template-columns:minmax(0,.9fr) minmax(430px,1.1fr);gap:30px 60px}.footer-social-section{margin:0}.footer-social-grid{gap:12px}.social-link{min-height:85px;padding:13px}.footer-bottom{grid-column:1/-1;margin-top:8px}.social-name{font-size:14px}.social-meta{font-size:11px}}
 @media(max-width:350px){.site-footer{padding-left:15px;padding-right:15px}.social-link{gap:7px;padding:9px 7px;min-height:72px}.social-link .social-icon{width:30px;height:30px}.social-link .social-icon svg{width:19px;height:19px}.social-name{font-size:11px}}
 @media(prefers-reduced-motion:reduce){.social-link.is-ready{transition:none}}
+
+/* Global language selector. Stays out of the bottom navigation on mobile. */
+.language-switcher{position:fixed;z-index:45;top:calc(12px + env(safe-area-inset-top));right:12px;display:flex;align-items:center;gap:7px;background:#092f22e8;border:1px solid #ddb58a85;border-radius:999px;padding:6px 8px 6px 11px;box-shadow:0 6px 20px #001e1660;color:#fff6e7;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.language-switcher label{font-size:10px;font-weight:700;letter-spacing:.02em;color:#edd5bb}
+.language-switcher select{appearance:auto;border:0;background:#fff8ed;color:#153a29;border-radius:999px;padding:5px 3px 5px 7px;font-size:12px;min-width:88px;max-width:110px;cursor:pointer}
+.language-switcher select:focus-visible{outline:3px solid #e4ab6c;outline-offset:3px}
+@media(max-width:380px){.language-switcher{top:calc(7px + env(safe-area-inset-top));right:7px;padding:4px 6px;gap:4px}.language-switcher label{font-size:9px}.language-switcher select{font-size:11px;min-width:81px}}
+/* Brand story: editorial, compact, and responsive. */
+.about-section{position:relative;isolation:isolate;overflow:hidden;display:grid;gap:23px;grid-template-columns:1fr;background:#f0e5d7;border:1px solid #e2d0ba;border-radius:26px;margin-top:44px;margin-bottom:3px;padding:28px 23px 31px;box-shadow:0 13px 32px rgba(69,45,24,.07)}
+.about-section:before{content:"";position:absolute;right:-80px;top:-85px;border-radius:50%;width:220px;height:220px;background:#dab58b3b;z-index:-1}
+.about-decor{display:flex;align-items:center;gap:12px;font-size:11px;letter-spacing:.14em;font-weight:780;color:#9e6838}
+.about-decor span:nth-child(2){font-size:20px;letter-spacing:0;color:#a76340}
+.about-eyebrow{color:#a36c41;font-size:11px;font-weight:850;letter-spacing:.2em;margin:0 0 11px}
+.about-copy h2{font-size:clamp(29px,5.5vw,47px);color:#113e2b;line-height:1.11;margin:0 0 18px;max-width:620px}
+.about-copy>p:not(.about-eyebrow){font-size:14px;line-height:1.78;color:#3f4a3e;margin:0 0 12px;max-width:720px}
+.about-copy>p:last-child{margin-bottom:0}
+@media(min-width:760px){.about-section{grid-template-columns:220px 1fr;align-items:center;gap:40px;padding:42px;margin-top:54px}.about-decor{flex-direction:column;align-items:center;justify-content:center;font-size:15px;gap:21px}.about-decor span:nth-child(2){font-size:42px}}
+/* Same quantity pill, icon size, colors, and touch targets as Menu/Home. */
+.order-row .quantity.qty-picker{display:inline-flex;gap:2px;min-height:36px;padding:2px;border:1px solid #d7c7b5;background:#f4eee6;color:var(--forest);white-space:nowrap}
+.order-row .quantity.qty-picker button{width:31px;height:30px;color:inherit;display:grid;place-items:center;padding:0;flex:none}
+.order-row .quantity.qty-picker button .ico{width:17px;height:17px}
+.order-row .quantity.qty-picker span{min-width:22px;text-align:center;font-size:14px;font-weight:800;line-height:1.2;font-variant-numeric:tabular-nums}
+.order-row .quantity.qty-picker button:active{background:#e9dcd0}
+.order-row .quantity.qty-picker button:focus-visible{outline:2px solid var(--copper);outline-offset:1px}
+.order-row .quantity.qty-picker button:disabled{opacity:.35}
+@media(max-width:420px){.order-row{grid-template-columns:65px minmax(0,1fr) auto;gap:8px}.order-row img{width:64px;height:64px}.order-row .quantity.qty-picker{gap:0}.order-row .quantity.qty-picker button{width:26px;height:30px}.order-row .quantity.qty-picker span{min-width:19px}}
+@media(max-width:350px){.order-row{grid-template-columns:62px minmax(0,1fr);gap:8px}.order-row .quantity.qty-picker{grid-column:2;justify-self:start}.about-section{padding:23px 18px}}
