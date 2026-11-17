@@ -135,7 +135,7 @@ try:
             for tab in ('home', 'menu', 'pedidos'):
                 page.locator(f'nav [data-go="{tab}"]').click()
                 assert_page(page, tab)
-                page.evaluate('window.scrollTo(0, document.documentElement.scrollHeight)')
+                page.evaluate("window.scrollTo({top: document.documentElement.scrollHeight, behavior: 'instant'})")
                 assert footer.is_visible()
                 assert footer.locator('.footer-social-grid').is_visible()
                 # Content must remain above the fixed bottom navigation on iPhone.
