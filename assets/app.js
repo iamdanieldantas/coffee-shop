@@ -13,8 +13,38 @@ function storeCart(){try{localStorage.setItem('coffeehouse-cart-v3',JSON.stringi
 function toast(message){const el=$('toast');el.textContent=message;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2000)}
 function count(){return Object.values(cart).reduce((a,b)=>a+b,0)}
 function updateBadge(){const el=$('cart-badge'),n=count();el.textContent=n;el.hidden=!n}
-function add(id){cart[id]=(cart[id]||0)+1;storeCart();updateBadge();if($('pedidos').classList.contains('active'))renderOrders();toast(byId(id).name+' adicionado à sacola')}
-function change(id,diff){const next=(cart[id]||0)+diff;if(next<=0)delete cart[id];else cart[id]=next;storeCart();updateBadge();renderOrders()}
+const MAX_QUANTITY=99;
+// Show a single + until the first item is added; then reveal - quantity +.
+function quantityControl(p){
+ const q=cart[p.id]||0;
+ return `<div class="product-qty-slot" data-qty-slot="${p.id}">
+   <button class="round-add" type="button" data-add="${p.id}" aria-label="Adicionar ${p.name} à sacola" ${q?'hidden':''}>${ICONS.plus}</button>
+   <div class="qty-picker" role="group" aria-label="Quantidade de ${p.name}" ${q?'':'hidden'}>
+     <button type="button" data-change="${p.id}" data-diff="-1" aria-label="Diminuir ${p.name}">${ICONS.minus}</button>
+     <output aria-label="Quantidade de ${p.name}">${q}</output>
+     <button type="button" data-change="${p.id}" data-diff="1" aria-label="Aumentar ${p.name}" ${q>=MAX_QUANTITY?'disabled':''}>${ICONS.plus}</button>
+   </div>
+ </div>`;
+}
+function syncQuantityControls(id){
+ const q=cart[id]||0;
+ document.querySelectorAll('[data-qty-slot]').forEach(slot=>{
+   if(slot.dataset.qtySlot!==id)return;
+   slot.querySelector('.round-add').hidden=q>0;
+   slot.querySelector('.qty-picker').hidden=q===0;
+   slot.querySelector('output').textContent=String(q);
+   slot.querySelector('[data-diff="1"]').disabled=q>=MAX_QUANTITY;
+ });
+}
+function change(id,diff){
+ if(!byId(id)||![1,-1].includes(diff))return false;
+ const next=Math.max(0,Math.min(MAX_QUANTITY,(cart[id]||0)+diff));
+ if(next===(cart[id]||0))return false;
+ if(next===0)delete cart[id];else cart[id]=next;
+ storeCart();updateBadge();syncQuantityControls(id);renderOrders();
+ return true;
+}
+function add(id){if(change(id,1))toast(byId(id).name+' adicionado à sacola')}
 let carouselIndex=0,carouselTimer=null,carouselStartX=null;
 function setCarouselSlide(index){const slides=[...document.querySelectorAll('.hero-carousel .hero-slide')];if(!slides.length)return;carouselIndex=((index%slides.length)+slides.length)%slides.length;slides.forEach((el,i)=>{const active=i===carouselIndex;el.classList.toggle('is-active',active);el.setAttribute('aria-hidden',String(!active))});document.querySelectorAll('.hero-dot').forEach((el,i)=>{const active=i===carouselIndex;el.classList.toggle('is-active',active);el.setAttribute('aria-current',String(active))})}
 function syncCarouselPlayback(){clearInterval(carouselTimer);carouselTimer=null;if(!document.getElementById('home').classList.contains('active')||document.hidden||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;carouselTimer=setInterval(()=>setCarouselSlide(carouselIndex+1),4500)}
@@ -22,14 +52,14 @@ const heroCarousel=document.querySelector('.hero-carousel');
 if(heroCarousel){heroCarousel.addEventListener('touchstart',e=>{carouselStartX=e.changedTouches[0].clientX},{passive:true});heroCarousel.addEventListener('touchend',e=>{if(carouselStartX===null)return;const delta=e.changedTouches[0].clientX-carouselStartX;carouselStartX=null;if(Math.abs(delta)>45){setCarouselSlide(carouselIndex+(delta<0?1:-1));syncCarouselPlayback()}},{passive:true});heroCarousel.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();setCarouselSlide(carouselIndex+(e.key==='ArrowRight'?1:-1));syncCarouselPlayback()}})}
 document.addEventListener('visibilitychange',syncCarouselPlayback);
 function nav(page,updateHistory=true){if(!['home','menu','pedidos'].includes(page))return;document.querySelectorAll('.screen').forEach(el=>el.classList.toggle('active',el.id===page));document.querySelectorAll('.nav-btn').forEach(btn=>{const on=btn.dataset.go===page;btn.classList.toggle('active',on);if(on)btn.setAttribute('aria-current','page');else btn.removeAttribute('aria-current')});if(page==='pedidos')renderOrders();window.scrollTo(0,0);if(updateHistory&&location.hash!=='#'+page){try{history.pushState(null,'','#'+page)}catch(e){location.hash=page}}syncCarouselPlayback()}
-function itemCard(p){return `<article class="product"><img alt="${p.name}" src="${IMAGES[p.img]}"><div><h3>${p.name}</h3><p>${p.desc}</p><strong>${format(p.price)}</strong>${window.CoffeeLikes.button(p)}</div><button class="round-add" type="button" data-add="${p.id}" aria-label="Adicionar ${p.name} à sacola">${ICONS.plus}</button></article>`}
+function itemCard(p){return `<article class="product"><img alt="${p.name}" src="${IMAGES[p.img]}"><div class="product-info"><h3>${p.name}</h3><p>${p.desc}</p><div class="product-price-row"><strong>${format(p.price)}</strong>${quantityControl(p)}</div>${window.CoffeeLikes.button(p)}</div></article>`}
 function renderFeatured(){
  const defaults=['latte','croissant','cappuccino','coldbrew'].map(byId);
  const likes=window.CoffeeLikes;
  const hasLikes=likes.available()&&PRODUCTS.some(p=>likes.count(p.id)>0);
  const picks=hasLikes?[...PRODUCTS].sort((a,b)=>likes.count(b.id)-likes.count(a.id)).slice(0,4):defaults;
  $('featured-heading').textContent=hasLikes?'Mais curtidos da casa':'Destaques da casa';
- $('featured').innerHTML=picks.map(p=>`<article class="featured"><img src="${IMAGES[p.img]}" alt="${p.name}">${likes.button(p)}<div class="featured-body"><h3>${p.name}</h3><p>${p.desc}</p><div class="price-row"><strong class="price">${format(p.price)}</strong><button class="round-add" type="button" data-add="${p.id}" aria-label="Adicionar ${p.name}">${ICONS.plus}</button></div></div></article>`).join('');
+ $('featured').innerHTML=picks.map(p=>`<article class="featured"><img src="${IMAGES[p.img]}" alt="${p.name}">${likes.button(p)}<div class="featured-body"><h3>${p.name}</h3><p>${p.desc}</p><div class="price-row"><strong class="price">${format(p.price)}</strong>${quantityControl(p)}</div></div></article>`).join('');
 }
 let sortByLikes=false;
 function renderMenu(){
@@ -41,7 +71,7 @@ function renderMenu(){
  $('menu-items').innerHTML=`<div class="menu-sort"><span>Ordenar por</span><button type="button" data-sort-likes aria-pressed="${sortByLikes}" ${!likes.available()?'disabled':''}>${sortByLikes?'✓ ':''}Mais curtidos</button></div><section class="menu-section"><h2 class="serif">${categories.find(c=>c.id===selectedCategory).label}</h2><div class="menu-items">${prods.map(itemCard).join('')}</div></section>`;
 }
 function renderOrders(){let ids=Object.keys(cart);if(!ids.length){couponApplied=false;$('order-list').innerHTML=`<div class="empty">${ICONS.bag}<h3 class="serif">Sua sacola está vazia</h3><p>Escolha seus favoritos no Menu e prepare seu pedido para retirada.</p><a class="cta" href="#menu" data-go="menu">Explorar o menu</a></div>`;$('order-summary').innerHTML='<div class="summary-line"><span>Subtotal</span><strong>R$ 0,00</strong></div><div class="total-line"><span>Total</span><strong>R$ 0,00</strong></div><button class="confirm" type="button" disabled>Escolha um produto</button>';return}
- $('order-list').innerHTML=ids.map(id=>{const p=byId(id);return `<div class="order-row"><img src="${IMAGES[p.img]}" alt="${p.name}"><div><h3>${p.name}</h3><p>${format(p.price)}</p></div><div class="quantity"><button type="button" data-change="${id}" data-diff="-1" aria-label="Diminuir ${p.name}">${ICONS.minus}</button><span aria-label="Quantidade">${cart[id]}</span><button type="button" data-change="${id}" data-diff="1" aria-label="Aumentar ${p.name}">${ICONS.plus}</button></div></div>`}).join('');let subtotal=ids.reduce((sum,id)=>sum+byId(id).price*cart[id],0),discount=couponApplied?Math.round(subtotal*.1):0,total=subtotal-discount;
+ $('order-list').innerHTML=ids.map(id=>{const p=byId(id);return `<div class="order-row"><img src="${IMAGES[p.img]}" alt="${p.name}"><div><h3>${p.name}</h3><p>${format(p.price)}</p></div><div class="quantity"><button type="button" data-change="${id}" data-diff="-1" aria-label="Diminuir ${p.name}">${ICONS.minus}</button><span aria-label="Quantidade">${cart[id]}</span><button type="button" data-change="${id}" data-diff="1" aria-label="Aumentar ${p.name}" ${cart[id]>=MAX_QUANTITY?'disabled':''}>${ICONS.plus}</button></div></div>`}).join('');let subtotal=ids.reduce((sum,id)=>sum+byId(id).price*cart[id],0),discount=couponApplied?Math.round(subtotal*.1):0,total=subtotal-discount;
  $('order-summary').innerHTML=`<div class="summary-line"><span>Subtotal</span><span>${format(subtotal)}</span></div><button class="coupon-trigger" type="button" id="coupon-trigger"><span class="coupon-left">${ICONS.tag}<span>${couponApplied?'Cupom CAFE10 aplicado':'Cupom de desconto'}</span></span>${ICONS.chevron}</button><div class="coupon-body" id="coupon-body"><input aria-label="Código do cupom" placeholder="Digite um cupom" id="coupon-input" maxlength="24" autocomplete="off"><button id="apply-coupon" type="button">Aplicar</button></div><p class="coupon-error" id="coupon-error">Use o cupom demonstrativo CAFE10.</p>${couponApplied?`<div class="summary-line"><span>Desconto (10%)</span><span>− ${format(discount)}</span></div>`:''}<div class="total-line"><span>Total</span><span>${format(total)}</span></div><button class="confirm" type="button" id="checkout">${ICONS.bag}Confirmar pedido (retirada)</button>`;
 }
 window.addEventListener('hashchange',()=>nav(location.hash.slice(1)||'home',false));
