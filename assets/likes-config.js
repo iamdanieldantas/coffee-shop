@@ -1,8 +1,8 @@
-/* Configuração pública. Apenas a chave publicável (sb_publishable_...)!
- * Mantenha os campos vazios até configurar supabase/migrations/001_product_likes.sql.
- * Nunca coloque uma secret/service_role key num site público.
+/* Coffee House — Supabase public-only configuration.
+ * The publishable key is intentionally shipped to browsers; RLS/RPC guards data.
+ * Never put service_role, sb_secret or private credentials here.
  */
-window.COFFEE_LIKES_CONFIG = window.COFFEE_LIKES_CONFIG || {
-  supabaseUrl: '',
-  publishableKey: ''
+window.COFFEE_LIKES_CONFIG = {
+  supabaseUrl: 'https://jasnepwcihsuvelwcmvu.supabase.co',
+  publishableKey: 'sb_publishable_2TyGc7SqFmRG0bXojj-U7w_8i8s8O3P'
 };
