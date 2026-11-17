@@ -57,3 +57,22 @@
 .menu-sort button{border:1px solid #d6c6b7;background:#fffaf4;color:var(--forest);padding:9px 13px;border-radius:99px;font-size:12px;font-weight:730;cursor:pointer}
 .menu-sort button[aria-pressed="true"]{background:var(--forest);color:#fff}
 .menu-sort button:disabled{opacity:.5;cursor:not-allowed}
+
+/* One consistent, accessible - quantity + control for Home highlights and Menu. */
+.product{grid-template-columns:105px minmax(0,1fr)}
+.product-info{min-width:0}
+.product-price-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px 10px}
+.product-qty-slot{display:flex;align-items:center;flex:none}
+.product-qty-slot .round-add{align-self:auto;margin:0}
+.product-qty-slot .round-add[hidden],.product-qty-slot .qty-picker[hidden]{display:none!important}
+.qty-picker{display:inline-flex;align-items:center;justify-content:space-between;gap:2px;border-radius:99px;border:1px solid #d7c7b5;background:#f4eee6;color:var(--forest);min-height:36px;padding:2px;white-space:nowrap;touch-action:manipulation}
+.qty-picker button{border:0;background:transparent;display:grid;place-items:center;width:31px;height:30px;color:inherit;border-radius:50%;padding:0;flex:none}
+.qty-picker button:active{background:#e9dcd0}
+.qty-picker button:focus-visible{outline:2px solid var(--copper);outline-offset:1px}
+.qty-picker button:disabled{opacity:.35;cursor:not-allowed}
+.qty-picker button .ico{width:17px;height:17px}
+.qty-picker output{min-width:22px;text-align:center;font-size:14px;font-weight:800;font-variant-numeric:tabular-nums}
+.featured .price-row{flex-wrap:wrap;gap:8px 5px}
+.featured .product-qty-slot{margin-left:auto}
+.product .like-button{margin-top:10px}
+@media(max-width:350px){.product{grid-template-columns:84px minmax(0,1fr)}.product-price-row{gap:8px 4px}}
