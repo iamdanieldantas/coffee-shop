@@ -66,11 +66,62 @@ try:
             assert_page(page, 'pedidos')
             page.locator('#pedidos [data-go="menu"]').click()
             assert_page(page, 'menu')
+            # Regression: one synchronized - quantity + stepper across all screens.
+            menu_slot = page.locator('#menu [data-qty-slot="latte"]')
+            home_slot = page.locator('#home [data-qty-slot="latte"]')
+            assert menu_slot.locator('.round-add').is_visible()
+            assert menu_slot.locator('.qty-picker').is_hidden()
             page.locator('#menu [data-add="latte"]').first.click()
+            assert menu_slot.locator('output').inner_text() == '1'
+            assert home_slot.locator('output').inner_text() == '1'
+            assert menu_slot.locator('.qty-picker').is_visible()
+            assert menu_slot.locator('.round-add').is_hidden()
+            menu_slot.locator('[data-diff="1"]').click()
+            assert menu_slot.locator('output').inner_text() == '2'
+            assert home_slot.locator('output').inner_text() == '2'
+            assert page.locator('#cart-badge').inner_text() == '2'
+            page.locator('nav [data-go="home"]').click()
+            assert_page(page, 'home')
+            home_slot.locator('[data-diff="1"]').click()
+            assert home_slot.locator('output').inner_text() == '3'
+            assert menu_slot.locator('output').inner_text() == '3'
+            home_slot.locator('[data-diff="-1"]').click()
+            assert home_slot.locator('output').inner_text() == '2'
+            assert menu_slot.locator('output').inner_text() == '2'
             page.locator('nav [data-go="pedidos"]').click()
             assert_page(page, 'pedidos')
             assert page.locator('#order-list .order-row').count() == 1
+            assert page.locator('#order-list .quantity span').inner_text() == '2'
+            page.locator('#order-list [data-change="latte"][data-diff="1"]').click()
+            assert menu_slot.locator('output').inner_text() == '3'
+            assert home_slot.locator('output').inner_text() == '3'
+            assert page.locator('#order-list .quantity span').inner_text() == '3'
             assert 'R$' in page.locator('#order-summary').inner_text()
+            page.locator('nav [data-go="menu"]').click()
+            assert_page(page, 'menu')
+            page.reload(wait_until='load')
+            assert_page(page, 'menu')
+            menu_slot = page.locator('#menu [data-qty-slot="latte"]')
+            home_slot = page.locator('#home [data-qty-slot="latte"]')
+            assert menu_slot.locator('output').inner_text() == '3'
+            assert home_slot.locator('output').inner_text() == '3'
+            for expected in ('2', '1'):
+                menu_slot.locator('[data-diff="-1"]').click()
+                assert menu_slot.locator('output').inner_text() == expected
+                assert home_slot.locator('output').inner_text() == expected
+            menu_slot.locator('[data-diff="-1"]').click()
+            assert menu_slot.locator('.qty-picker').is_hidden()
+            assert menu_slot.locator('.round-add').is_visible()
+            assert home_slot.locator('.round-add').get_attribute('hidden') is None
+            assert page.locator('#cart-badge').is_hidden()
+            page.locator('nav [data-go="home"]').click()
+            assert_page(page, 'home')
+            home_slot.locator('[data-add="latte"]').click()
+            assert home_slot.locator('output').inner_text() == '1'
+            assert menu_slot.locator('output').inner_text() == '1'
+            page.locator('nav [data-go="pedidos"]').click()
+            assert_page(page, 'pedidos')
+            assert page.locator('#order-list .quantity span').inner_text() == '1'
             page.locator('nav [data-go="home"]').click()
             assert_page(page, 'home')
             assert not errors, errors
