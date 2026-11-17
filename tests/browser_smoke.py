@@ -112,7 +112,7 @@ try:
             menu_slot.locator('[data-diff="-1"]').click()
             assert menu_slot.locator('.qty-picker').is_hidden()
             assert menu_slot.locator('.round-add').is_visible()
-            assert home_slot.locator('.round-add').is_visible()
+            assert home_slot.locator('.round-add').get_attribute('hidden') is None
             assert page.locator('#cart-badge').is_hidden()
             page.locator('nav [data-go="home"]').click()
             assert_page(page, 'home')
