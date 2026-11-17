@@ -10,25 +10,22 @@ O GitHub Pages é estático. Para mostrar o número **real** de curtidas entre v
 - O Menu tem ordenação "Mais curtidos" por categoria.
 - Sem backend, o coração fica desabilitado e aparece "—", nunca um número inventado.
 
-## Ativação (necessária antes da publicação das curtidas)
+## Estado do projeto — 17/11/2026
 
-1. Crie um projeto em [Supabase](https://supabase.com/dashboard) (pode começar no plano Free).
-2. Em **Authentication → Providers**, habilite **Anonymous Sign-Ins**. Não há cadastro com email nem senha.
-3. Em **SQL Editor**, execute **todo** o arquivo `supabase/migrations/001_product_likes.sql`.
-4. Em **Project Settings → API Keys**, copie somente a chave **Publishable** (`sb_publishable_...`), e o **Project URL** (`https://<project>.supabase.co`).
-5. Preencha `assets/likes-config.js` no repositório:
+- **Supabase:** projeto `coffee-shop` ativo na região `sa-east-1` (São Paulo), custo informado US$ 0/mês.
+- **Banco:** migração `coffee_product_likes` aplicada, com RLS, RPCs e 9 produtos retornando totais reais.
+- **Configuração pública:** URL do projeto e chave *publishable* configuradas na PR de ativação. Nenhuma chave secreta no repositório.
+- **Pendente:** habilitar **Anonymous Sign-Ins** no painel e integrar/publicar a PR de configuração após os testes.
 
-```javascript
-window.COFFEE_LIKES_CONFIG = {
-  supabaseUrl: 'https://SEU-PROJETO.supabase.co',
-  publishableKey: 'sb_publishable_SUA_CHAVE_PUBLICA'
-};
-```
+### Passo obrigatório no painel Supabase
 
-6. Execute `python -m harness.runner --mode review --browser`, faça PR e publique pelo GitHub Actions.
-7. Confira com dois navegadores/perfis: curtir em um, atualizar no outro e verificar a mesma contagem.
+1. Abra https://supabase.com/dashboard/project/jasnepwcihsuvelwcmvu/auth/providers
+2. Em **Authentication → Sign In / Providers**, habilite **Allow anonymous sign-ins** (ou **Anonymous Sign-Ins**).
+3. Salve. Assim a aplicação poderá criar uma sessão anônima no primeiro clique em curtir.
+4. Após a ativação, valide a API via `python scripts/verify_likes_api.py` e a interface em dois navegadores.
 
-**Nunca** coloque `service_role`, `sb_secret_...`, token pessoal ou senha em arquivos públicos ou no GitHub Pages.
+**Não é necessário** criar outro projeto, executar SQL novamente nem inserir credenciais secretas.
+Não use `service_role`, `sb_secret_...`, token pessoal ou senha em arquivos públicos.
 
 ## Segurança e privacidade
 
