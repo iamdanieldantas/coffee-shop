@@ -81,7 +81,8 @@ try:
         context = browser.new_context(viewport={'width': 390, 'height': 844}, java_script_enabled=False)
         page = context.new_page()
         page.goto(f'http://127.0.0.1:{server.server_port}/', wait_until='load')
-        page.locator('#home [data-go="menu"]').click()
+        assert page.locator('#home [data-go="menu"]').get_attribute('href') == '#menu'
+        page.locator('nav [data-go="menu"]').click()
         assert page.locator('#menu').is_visible()
         page.locator('nav [data-go="pedidos"]').click()
         assert page.locator('#pedidos').is_visible()
