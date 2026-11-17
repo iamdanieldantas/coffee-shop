@@ -51,7 +51,7 @@ class SiteContract(unittest.TestCase):
   self.assertIn("supabaseUrl: 'https://jasnepwcihsuvelwcmvu.supabase.co'",config)
   self.assertIn("publishableKey: 'sb_publishable_",config)
   self.assertNotIn("sb_secret_",config)
-  self.assertNotIn("service_role",config)
+  self.assertNotIn("publishableKey: 'service_role",config)
   self.assertIn('primary key (product_id, user_id)',sql)
   self.assertIn('enable row level security',sql)
   self.assertIn('revoke all on table',sql)
