@@ -127,5 +127,5 @@
 .order-row .quantity.qty-picker button:active{background:#e9dcd0}
 .order-row .quantity.qty-picker button:focus-visible{outline:2px solid var(--copper);outline-offset:1px}
 .order-row .quantity.qty-picker button:disabled{opacity:.35}
-@media(max-width:420px){.order-row{grid-template-columns:65px minmax(0,1fr) auto;gap:8px}.order-row img{width:64px;height:64px}.order-row .quantity.qty-picker{gap:0}.order-row .quantity.qty-picker button{width:26px;height:30px}.order-row .quantity.qty-picker span{min-width:19px}}
+@media(max-width:420px){.order-row{grid-template-columns:65px minmax(0,1fr) auto;gap:8px}.order-row img{width:64px;height:64px}}
 @media(max-width:350px){.order-row{grid-template-columns:62px minmax(0,1fr);gap:8px}.order-row .quantity.qty-picker{grid-column:2;justify-self:start}.about-section{padding:23px 18px}}
