@@ -71,6 +71,22 @@ class SiteContract(unittest.TestCase):
   self.assertIn('.qty-picker[hidden]',CSS)
   self.assertIn('grid-template-columns:105px minmax(0,1fr)',CSS)
   self.assertIn("localStorage.getItem('coffeehouse-cart-v3')",JS)
+ def test_social_footer(self):
+  config=(ROOT/'assets/social-config.js').read_text()
+  controller=(ROOT/'assets/social-footer.js').read_text()
+  self.assertEqual(HTML.count('<footer class="site-footer"'),1)
+  self.assertIn('assets/social-config.js',HTML)
+  self.assertIn('assets/social-footer.js',HTML)
+  self.assertIn('footer-social-grid',CSS)
+  self.assertIn('padding:43px 20px calc(136px + env(safe-area-inset-bottom))',CSS)
+  for network in ('instagram','facebook','spotify','whatsapp'):
+   self.assertEqual(HTML.count('data-social="'+network+'"'),1)
+   self.assertIn(network+": ''",config)
+   self.assertIn("service === '"+network+"'",controller)
+  self.assertEqual(HTML.count('class="social-link is-pending"'),4)
+  self.assertIn('noopener noreferrer',controller)
+  self.assertIn("target.protocol !== 'https:'",controller)
+  self.assertNotIn('https://wa.me/55DDDNUMERO',HTML)
  def test_assets(self):
   self.assertTrue((ROOT/'assets/app.js').is_file())
   self.assertTrue((ROOT/'assets/styles.css').is_file())
