@@ -124,10 +124,55 @@ try:
             assert page.locator('#order-list .quantity span').inner_text() == '1'
             page.locator('nav [data-go="home"]').click()
             assert_page(page, 'home')
+            # The footer is shared across all routes. No guessed or broken URLs.
+            footer = page.locator('footer.site-footer')
+            assert footer.count() == 1
+            assert footer.locator('.social-link').count() == 4
+            assert footer.locator('.social-link.is-pending').count() == 4
+            assert footer.locator('a.social-link').count() == 0
+            for social in ('instagram','facebook','spotify','whatsapp'):
+                assert footer.locator(f'[data-social="{social}"]').count() == 1
+            for tab in ('home', 'menu', 'pedidos'):
+                page.locator(f'nav [data-go="{tab}"]').click()
+                assert_page(page, tab)
+                page.evaluate('window.scrollTo(0, document.documentElement.scrollHeight)')
+                assert footer.is_visible()
+                assert footer.locator('.footer-social-grid').is_visible()
+                # Content must remain above the fixed bottom navigation on iPhone.
+                footer_end = footer.locator('.footer-bottom').bounding_box()
+                nav_start = page.locator('nav.bottom-wrap').bounding_box()
+                if width < 760:
+                    assert footer_end['y'] + footer_end['height'] < nav_start['y']
+                page.evaluate('window.scrollTo(0, 0)')
             assert not errors, errors
-            print(f'OK browser {width}x{height}: nav CTAs, one active tab, carousel, photos, logo, cart', flush=True)
+            print(f'OK browser {width}x{height}: nav, cart, likes, carousel and 4-channel footer', flush=True)
             context.close()
             browser.close()
+
+        # Configured channels become safe real links, never implicit generic homepages.
+        browser = playwright.chromium.launch(headless=True)
+        context = browser.new_context(viewport={'width': 390, 'height': 844})
+        page = context.new_page()
+        page.add_init_script("""window.COFFEE_SOCIAL_LINKS = {
+            instagram: 'https://www.instagram.com/coffeehouse_example/',
+            facebook: 'https://www.facebook.com/coffeehouse-example/',
+            spotify: 'https://open.spotify.com/playlist/1ab234',
+            whatsapp: 'https://wa.me/5511999999999'
+        };""")
+        page.goto(f'http://127.0.0.1:{server.server_port}/', wait_until='load')
+        links = page.locator('footer.site-footer a.social-link')
+        assert links.count() == 4
+        assert page.locator('footer.site-footer .is-pending').count() == 0
+        for social in ('instagram','facebook','spotify','whatsapp'):
+            link = page.locator(f'footer.site-footer a[data-social="{social}"]')
+            assert link.count() == 1
+            assert link.get_attribute('href').startswith('https://')
+            assert link.get_attribute('target') == '_blank'
+            assert 'noopener' in link.get_attribute('rel')
+            assert 'noreferrer' in link.get_attribute('rel')
+        print('OK configured social URLs open in a new tab with secure link attributes', flush=True)
+        context.close()
+        browser.close()
 
         browser = playwright.chromium.launch(headless=True)
         context = browser.new_context(viewport={'width': 390, 'height': 844}, java_script_enabled=False)
