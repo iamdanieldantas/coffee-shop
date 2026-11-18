@@ -1,0 +1,20 @@
+{
+  "name": "Coffee House · Cafeteria & Bakery",
+  "short_name": "Coffee House",
+  "description": "Coffee House — cafés, panificação, sabores e boas pausas. Protótipo demonstrativo.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#fbf6ef",
+  "theme_color": "#083321",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "assets/app-icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any maskable"
+    }
+  ]
+}
