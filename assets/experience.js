@@ -105,7 +105,7 @@ document.addEventListener('click',e=>{
  if(e.target.closest('[data-experience-close]')||e.target.id==='experience-modal'){e.preventDefault();close()}
 },true);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!modal().hidden)close()});
-window.addEventListener('coffee:language-change',()=>{if(!modal().hidden)close();enhanceAfterRender()});
+window.addEventListener('coffee:language-change',()=>{if(!modal().hidden)close();document.getElementById('discovery-tools')?.remove();enhanceAfterRender()});
 window.CoffeeExperience={t,filter:getVisibleProducts,enhanceAfterRender,priceFor,variantLabel,checkout,summary};
 enhanceAfterRender();
 })();
