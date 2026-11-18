@@ -49,7 +49,8 @@
       "footer.open": "Acessar",
       "footer.chat": "Conversar",
       "footer.motto": "Feito para quem ama café, pão quentinho e boas histórias.",
-      "footer.demo": "Coffee House · Site demonstrativo", "admin.link": "Área administrativa",
+      "footer.demo": "Coffee House · Site demonstrativo",
+      "admin.link": "Área administrativa",
       "modal.title": "Pedido simulado!",
       "modal.message": "Esta é uma demonstração. Nenhum pedido foi enviado à loja e nenhum pagamento foi realizado.",
       "modal.close": "Voltar para o café",
@@ -86,13 +87,22 @@
       "aria.image2": "Croissant artesanal dourado",
       "aria.image3": "Café com leite cremoso",
       "aria.openSocial": "Abrir {service} do Coffee House em nova aba",
-      "meta.description": "Coffee House — café, croissants e boas pausas. Protótipo de cafeteria e bakery."
+      "meta.description": "Coffee House — café, croissants e boas pausas. Protótipo de cafeteria e bakery.",
+      "a11y.skip": "Pular para o conteúdo",
+      "story.eyebrow": "INSPIRAÇÕES DA MARCA",
+      "story.title": "Três cidades, uma paixão por café.",
+      "story.intro": "Alguns lugares ficam na memória pelo aroma de um café, pelo pão saindo do forno e pelas conversas que acontecem sem pressa.",
+      "story.buenos": "Mesas sem pressa, medialunas e conversas longas.",
+      "story.newyork": "Cafés de esquina, padarias vibrantes e energia urbana.",
+      "story.saopaulo": "Pausas entre compromissos, encontros e novos sabores.",
+      "story.caption": "Cidades que inspiram nossa identidade — não representam endereços de lojas."
     },
     "categories": {
       "bebidas": "Bebidas",
       "padaria": "Padaria",
       "doces": "Doces",
-      "salgados": "Salgados", "all": "Todos"
+      "salgados": "Salgados",
+      "all": "Todos"
     },
     "products": {
       "espresso": {
@@ -180,7 +190,8 @@
       "footer.open": "Visit",
       "footer.chat": "Chat",
       "footer.motto": "Made for coffee, warm pastries, and good stories.",
-      "footer.demo": "Coffee House · Demo website", "admin.link": "Admin area",
+      "footer.demo": "Coffee House · Demo website",
+      "admin.link": "Admin area",
       "modal.title": "Demo order placed!",
       "modal.message": "This is a demo. No order was sent to a store and no payment was made.",
       "modal.close": "Back to the café",
@@ -217,13 +228,22 @@
       "aria.image2": "Golden handmade croissant",
       "aria.image3": "Creamy latte",
       "aria.openSocial": "Open Coffee House {service} in a new tab",
-      "meta.description": "Coffee House — coffee, croissants, and good moments. Café and bakery demo."
+      "meta.description": "Coffee House — coffee, croissants, and good moments. Café and bakery demo.",
+      "a11y.skip": "Skip to content",
+      "story.eyebrow": "OUR INSPIRATION",
+      "story.title": "Three cities, one love of coffee.",
+      "story.intro": "Some places stay with us because of the smell of fresh coffee, warm pastries, and conversations that linger.",
+      "story.buenos": "Slow mornings, medialunas, and long conversations.",
+      "story.newyork": "Corner cafés, lively bakeries, and big-city energy.",
+      "story.saopaulo": "Coffee breaks between busy days, new flavors, and good company.",
+      "story.caption": "Cities that inspire our identity — not store locations."
     },
     "categories": {
       "bebidas": "Drinks",
       "padaria": "Bakery",
       "doces": "Sweets",
-      "salgados": "Savory", "all": "All"
+      "salgados": "Savory",
+      "all": "All"
     },
     "products": {
       "espresso": {
@@ -311,7 +331,8 @@
       "footer.open": "Visitar",
       "footer.chat": "Chatear",
       "footer.motto": "Hecho para quienes aman el café, el pan recién horneado y las buenas historias.",
-      "footer.demo": "Coffee House · Sitio de demostración", "admin.link": "Administración",
+      "footer.demo": "Coffee House · Sitio de demostración",
+      "admin.link": "Administración",
       "modal.title": "¡Pedido de prueba!",
       "modal.message": "Esto es una demostración. No se envió ningún pedido a una tienda ni se realizó ningún pago.",
       "modal.close": "Volver al café",
@@ -348,13 +369,22 @@
       "aria.image2": "Croissant artesanal dorado",
       "aria.image3": "Café con leche cremoso",
       "aria.openSocial": "Abrir {service} de Coffee House en una pestaña nueva",
-      "meta.description": "Coffee House — café, croissants y buenos momentos. Demostración de cafetería y panadería."
+      "meta.description": "Coffee House — café, croissants y buenos momentos. Demostración de cafetería y panadería.",
+      "a11y.skip": "Ir al contenido",
+      "story.eyebrow": "NUESTRAS INSPIRACIONES",
+      "story.title": "Tres ciudades, una pasión por el café.",
+      "story.intro": "Hay lugares que se quedan en la memoria por el aroma del café, el pan recién hecho y las charlas sin apuro.",
+      "story.buenos": "Mesas sin apuro, medialunas y charlas largas.",
+      "story.newyork": "Cafés de esquina, panaderías con vida y energía urbana.",
+      "story.saopaulo": "Pausas entre compromisos, encuentros y sabores nuevos.",
+      "story.caption": "Ciudades que inspiran nuestra identidad — no son direcciones de locales."
     },
     "categories": {
       "bebidas": "Bebidas",
       "padaria": "Panadería",
       "doces": "Dulces",
-      "salgados": "Salados", "all": "Todos"
+      "salgados": "Salados",
+      "all": "Todos"
     },
     "products": {
       "espresso": {
