@@ -14,6 +14,8 @@ def main():
     results=[execute([sys.executable,'-m','unittest','discover','-s','tests','-p','test_*.py','-v'])]
     if args.browser and results[-1]['ok']:
         results.append(execute([sys.executable,'-m','tests.browser_smoke']))
+        if results[-1]['ok']:
+            results.append(execute([sys.executable,'-m','tests.browser_v2']))
     passed=all(x['ok'] for x in results)
     dest=ROOT/'_reports'/'harness-report.json';dest.parent.mkdir(exist_ok=True)
     dest.write_text(json.dumps({'mode':args.mode,'passed':passed,'timestamp':datetime.datetime.now(datetime.timezone.utc).isoformat(),'checks':results},indent=2,ensure_ascii=False))

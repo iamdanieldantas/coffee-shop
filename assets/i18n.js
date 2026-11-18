@@ -92,7 +92,7 @@
       "bebidas": "Bebidas",
       "padaria": "Padaria",
       "doces": "Doces",
-      "salgados": "Salgados"
+      "salgados": "Salgados", "all": "Todos"
     },
     "products": {
       "espresso": {
@@ -223,7 +223,7 @@
       "bebidas": "Drinks",
       "padaria": "Bakery",
       "doces": "Sweets",
-      "salgados": "Savory"
+      "salgados": "Savory", "all": "All"
     },
     "products": {
       "espresso": {
@@ -354,7 +354,7 @@
       "bebidas": "Bebidas",
       "padaria": "Panadería",
       "doces": "Dulces",
-      "salgados": "Salados"
+      "salgados": "Salados", "all": "Todos"
     },
     "products": {
       "espresso": {

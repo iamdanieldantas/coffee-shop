@@ -7,8 +7,9 @@ const I18N=window.CoffeeI18n;
 const t=(key,args)=>I18N.t(key,args);
 const productLabel=p=>{const translation=I18N.product(p.id);return translation?{...p,...translation}:p};
 const format=v=>(v/100).toLocaleString(I18N.localeTag(),{style:'currency',currency:'BRL'});
-const byId=id=>PRODUCTS.find(p=>p.id===id);
+const byId=id=>PRODUCTS.find(p=>p.id===String(id).split('~')[0]);
 window.COFFEE_PRODUCT_IDS=PRODUCTS.map(p=>p.id);
+categories.push({id:'all',label:'Todos',icon:ICONS.check});
 const $=id=>document.getElementById(id);
 let cart={};try{let saved=JSON.parse(localStorage.getItem('coffeehouse-cart-v3')||'{}');for(const [id,q] of Object.entries(saved))if(byId(id)&&Number.isInteger(q)&&q>0&&q<100)cart[id]=q;}catch(e){}
 let selectedCategory='bebidas',couponApplied=false,toastTimer;
@@ -55,23 +56,26 @@ const heroCarousel=document.querySelector('.hero-carousel');
 if(heroCarousel){heroCarousel.addEventListener('touchstart',e=>{carouselStartX=e.changedTouches[0].clientX},{passive:true});heroCarousel.addEventListener('touchend',e=>{if(carouselStartX===null)return;const delta=e.changedTouches[0].clientX-carouselStartX;carouselStartX=null;if(Math.abs(delta)>45){setCarouselSlide(carouselIndex+(delta<0?1:-1));syncCarouselPlayback()}},{passive:true});heroCarousel.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();setCarouselSlide(carouselIndex+(e.key==='ArrowRight'?1:-1));syncCarouselPlayback()}})}
 document.addEventListener('visibilitychange',syncCarouselPlayback);
 function nav(page,updateHistory=true){if(!['home','menu','pedidos'].includes(page))return;document.querySelectorAll('.screen').forEach(el=>el.classList.toggle('active',el.id===page));document.querySelectorAll('.nav-btn').forEach(btn=>{const on=btn.dataset.go===page;btn.classList.toggle('active',on);if(on)btn.setAttribute('aria-current','page');else btn.removeAttribute('aria-current')});if(page==='pedidos')renderOrders();window.scrollTo(0,0);if(updateHistory&&location.hash!=='#'+page){try{history.pushState(null,'','#'+page)}catch(e){location.hash=page}}syncCarouselPlayback()}
-function itemCard(p){p=productLabel(p);return `<article class="product"><img alt="${p.name}" src="${IMAGES[p.img]}"><div class="product-info"><h3>${p.name}</h3><p>${p.desc}</p><div class="product-price-row"><strong>${format(p.price)}</strong>${quantityControl(p)}</div>${window.CoffeeLikes.button(p)}</div></article>`}
+function itemCard(p){p=productLabel(p);return `<article class="product" data-product-id="${p.id}"><img alt="${p.name}" src="${IMAGES[p.img]}"><div class="product-info"><h3>${p.name}</h3><p>${p.desc}</p><div class="product-price-row"><strong>${format(p.price)}</strong>${quantityControl(p)}</div>${window.CoffeeLikes.button(p)}</div></article>`}
 function renderFeatured(){
  const defaults=['latte','croissant','cappuccino','coldbrew'].map(byId);
  const likes=window.CoffeeLikes;
  const hasLikes=likes.available()&&PRODUCTS.some(p=>likes.count(p.id)>0);
  const picks=hasLikes?[...PRODUCTS].sort((a,b)=>likes.count(b.id)-likes.count(a.id)).slice(0,4):defaults;
  $('featured-heading').textContent=t(hasLikes?'hero.popular':'hero.featured');
- $('featured').innerHTML=picks.map(raw=>{const p=productLabel(raw);return `<article class="featured"><img src="${IMAGES[p.img]}" alt="${p.name}">${likes.button(p)}<div class="featured-body"><h3>${p.name}</h3><p>${p.desc}</p><div class="price-row"><strong class="price">${format(p.price)}</strong>${quantityControl(p)}</div></div></article>`}).join('');
+ $('featured').innerHTML=picks.map(raw=>{const p=productLabel(raw);return `<article class="featured" data-product-id="${p.id}"><img src="${IMAGES[p.img]}" alt="${p.name}">${likes.button(p)}<div class="featured-body"><h3>${p.name}</h3><p>${p.desc}</p><div class="price-row"><strong class="price">${format(p.price)}</strong>${quantityControl(p)}</div></div></article>`}).join('');
+ window.CoffeeExperience?.enhanceAfterRender();
 }
 let sortByLikes=false;
 function renderMenu(){
  $('categories').innerHTML=categories.map(cat=>`<button type="button" class="category ${selectedCategory===cat.id?'selected':''}" data-category="${cat.id}" aria-pressed="${selectedCategory===cat.id}">${cat.icon}<span>${I18N.category(cat.id)}</span></button>`).join('');
  const likes=window.CoffeeLikes;
  $('likes-status').textContent=likes.statusText();
- const prods=PRODUCTS.filter(p=>p.category===selectedCategory);
+ let prods=PRODUCTS.filter(p=>selectedCategory==='all'||p.category===selectedCategory);
+ if(window.CoffeeExperience)prods=window.CoffeeExperience.filter(prods);
  if(sortByLikes&&likes.available())prods.sort((a,b)=>likes.count(b.id)-likes.count(a.id));
  $('menu-items').innerHTML=`<div class="menu-sort"><span>${t('menu.sort')}</span><button type="button" data-sort-likes aria-pressed="${sortByLikes}" ${!likes.available()?'disabled':''} >${sortByLikes?'✓ ':''}${t('menu.popular')}</button></div><section class="menu-section"><h2 class="serif">${I18N.category(selectedCategory)}</h2><div class="menu-items">${prods.map(itemCard).join('')}</div></section>`;
+ window.CoffeeExperience?.enhanceAfterRender();
 }
 
 function renderOrders(){
@@ -89,15 +93,17 @@ function renderOrders(){
  }
  $('order-list').innerHTML=ids.map(id=>{
   const p=productLabel(byId(id));
+  const unitPrice=window.CoffeeExperience?.priceFor(id,p)??p.price;
+  const variantNote=window.CoffeeExperience?.variantLabel(id)??'';
   return `<div class="order-row"><img src="${IMAGES[p.img]}" alt="${p.name}">
-   <div><h3>${p.name}</h3><p>${format(p.price)}</p></div>
+   <div><h3>${p.name}</h3>${variantNote?`<small class="variant-note">${variantNote}</small>`:""}<p>${format(unitPrice)}</p></div>
    <div class="quantity qty-picker" role="group" aria-label="${t('qty.label',{name:p.name})}">
     <button type="button" data-change="${id}" data-diff="-1" aria-label="${t('qty.down',{name:p.name})}">${ICONS.minus}</button>
     <span aria-label="${t('qty.count')}">${cart[id]}</span>
     <button type="button" data-change="${id}" data-diff="1" aria-label="${t('qty.up',{name:p.name})}" ${cart[id]>=MAX_QUANTITY?'disabled':''}>${ICONS.plus}</button>
    </div></div>`
  }).join('');
- const subtotal=ids.reduce((sum,id)=>sum+byId(id).price*cart[id],0);
+ const subtotal=ids.reduce((sum,id)=>{const p=byId(id);return sum+(window.CoffeeExperience?.priceFor(id,p)??p.price)*cart[id]},0);
  const discount=couponApplied?Math.round(subtotal*.1):0;
  const total=subtotal-discount;
  $('order-summary').innerHTML=`
