@@ -168,7 +168,7 @@ class SiteContract(unittest.TestCase):
   self.assertIn('data-demo-stamp',loyalty)
   self.assertIn('data-demo-reset',loyalty)
   self.assertIn('demo-stamps-v1',loyalty)
-  self.assertIn('demonstração',loyalty)
+  self.assertIn('simulação',loyalty)
   self.assertIn('assets/catalog.js',HTML)
   self.assertIn('assets/loyalty.js',HTML)
   self.assertIn('href="admin.html"',HTML)
