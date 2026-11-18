@@ -21,6 +21,7 @@
   const locale=window.CoffeeI18n.getLocale();
   return {name:safe(row['name_'+locale]),desc:safe(row['desc_'+locale])};
  }
+ function plainFor(id){const row=catalog.get(id);if(!row)return null;const locale=window.CoffeeI18n.getLocale();return {name:row['name_'+locale],desc:row['desc_'+locale]}}
  function status(){return catalog.size?'live':'fallback'}
  async function load(){
   if(!valid)return false;
@@ -46,6 +47,6 @@
    return true;
   } catch(_) { return false; } // Offline fallback, never block browsing.
  }
- window.CoffeeCatalog={load,nameFor,status};
+ window.CoffeeCatalog={load,nameFor,plainFor,status};
  load();
 })();
