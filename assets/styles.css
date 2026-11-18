@@ -170,3 +170,21 @@
 .checkout-actions .cta{font-size:13px;padding:12px}
 body.dialog-open{overflow:hidden}
 @media(min-width:680px){.detail-layout{grid-template-columns:45% 1fr;align-items:start}.detail-image{height:360px}.experience-dialog{padding:32px}}
+
+/* Transparent loyalty prototype. No redemption / points issued. */
+.loyalty-card{margin:22px 0 3px;padding:29px 23px;display:grid;gap:22px;border-radius:26px;background:linear-gradient(145deg,#0d412d,#062e20);color:#fff6e9;border:1px solid #bd9967;box-shadow:0 10px 28px #113b291c}
+.loyalty-intro h2{font-size:clamp(25px,4.5vw,42px);line-height:1.1;color:#fff3df;margin:5px 0 15px}
+.loyalty-intro p:not(.about-eyebrow){font-size:13px;line-height:1.7;color:#e3eadf;max-width:540px}
+.loyalty-card .about-eyebrow{color:#edc18a}
+.loyalty-progress{display:grid;gap:15px;align-content:center}
+.loyalty-stamps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.loyalty-stamps span{height:49px;border-radius:100%;border:1px dashed #b6bda37f;background:#ffffff11;display:grid;place-items:center;font-size:23px;filter:grayscale(1);opacity:.45}
+.loyalty-stamps span.filled{background:#dcaf7c;color:#092e20;filter:none;opacity:1;border-style:solid}
+.loyalty-progress strong{font-size:12px;letter-spacing:.02em;color:#ebd2b5}
+.loyalty-actions{display:flex;flex-wrap:wrap;gap:9px}
+.loyalty-actions button{min-height:42px;border-radius:13px;border:1px solid #e6c9a6;padding:9px 12px;background:#ebc495;color:#163e29;font-weight:800;font-size:12px}
+.loyalty-actions button:last-child{background:#fff1e511;color:#fcebd5}
+.loyalty-feedback{font-size:11px;color:#edc18a}
+.footer-admin{color:#e4c49e;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
+.footer-admin:focus-visible{outline:2px solid #f7d1a4;outline-offset:4px}
+@media(min-width:760px){.loyalty-card{grid-template-columns:1fr 1fr;gap:40px;padding:39px}.loyalty-stamps span{height:54px}}
