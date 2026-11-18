@@ -129,3 +129,44 @@
 .order-row .quantity.qty-picker button:disabled{opacity:.35}
 @media(max-width:420px){.order-row{grid-template-columns:65px minmax(0,1fr) auto;gap:8px}.order-row img{width:64px;height:64px}}
 @media(max-width:350px){.order-row{grid-template-columns:62px minmax(0,1fr);gap:8px}.order-row .quantity.qty-picker{grid-column:2;justify-self:start}.about-section{padding:23px 18px}}
+
+/* Coffee House V2 — product discovery, details, and safe demo checkout */
+.discovery{background:#fffdf9;border:1px solid #e6d9c8;border-radius:17px;padding:15px;margin:14px 0 18px;box-shadow:0 8px 16px #192e1610}
+.discovery>label,.discovery-actions>label{display:block;font-size:12px;font-weight:780;margin-bottom:7px;color:#193e2b}
+.discovery input,.discovery select{width:100%;font-size:14px;min-height:42px;padding:10px 12px;border:1px solid #d7c7b5;border-radius:11px;background:#fff;color:#182a1e}
+.discovery-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;align-items:end}
+.discovery-actions>label{grid-column:1/-1;margin:0}
+.discovery-actions select{width:100%}
+.discovery-actions button{border-radius:11px;background:#103923;color:#fff5e9;min-height:42px;border:1px solid #103923;padding:8px 10px;font-size:12px;font-weight:700}
+.discovery-actions button[aria-pressed="true"]{background:#e0b68a;color:#103923;border-color:#cf9865}
+.discovery small{display:block;margin-top:10px;color:#666c62;font-size:11px;line-height:1.5}
+.empty-search{font-size:14px;color:#657165;padding:30px 5px}
+.product-more{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:11px}
+.product-more [data-detail]{color:#0d472c;text-align:left;border:0;background:transparent;font-size:12px;font-weight:760;letter-spacing:.01em;text-decoration:underline;text-underline-offset:3px;padding:7px 0}
+.product-more .bookmark{color:#996840;font-size:22px;font-weight:700;width:36px;height:36px;border-radius:99px;background:#f4ebde;border:1px solid #e4d4be;display:grid;place-items:center;flex:none}
+.product-more .bookmark[aria-pressed="true"]{background:#f5dca3;color:#73440c}
+.product-more button:focus-visible,.discovery button:focus-visible{outline:3px solid #b77b45;outline-offset:2px}
+.variant-note{display:block;font-size:11px;color:#647065;margin:3px 0}
+.experience-overlay[hidden]{display:none!important}
+.experience-overlay{position:fixed;z-index:110;inset:0;display:flex;align-items:center;justify-content:center;background:#052115b8;backdrop-filter:blur(4px);padding:16px;overscroll-behavior:contain}
+.experience-dialog{position:relative;width:min(100%,660px);max-height:calc(100svh - 36px);overflow-y:auto;scrollbar-width:thin;background:#fff9f1;color:#213626;padding:29px 23px 24px;border-radius:23px;box-shadow:0 20px 70px #03180e70}
+.experience-dialog h2{font-size:clamp(25px,4vw,35px);margin:6px 0 14px;color:#093825}
+.experience-dialog p{font-size:14px;line-height:1.7;margin:7px 0;color:#465549}
+.experience-dialog .dialog-x{position:sticky;float:right;top:0;z-index:2;border:1px solid #cdb8a1;background:#fff;border-radius:100%;width:37px;height:37px;font-size:25px;line-height:1}
+.detail-layout{display:grid;gap:18px}
+.detail-image{width:100%;height:200px;border-radius:13px;object-fit:cover}
+.detail-price{font-size:22px!important;font-weight:800;color:#103923!important}
+.detail-note{font-size:11px!important;color:#766a5e!important}
+.detail-choices{display:grid;gap:14px;margin:19px 0}
+.detail-choices fieldset{display:flex;gap:10px;flex-wrap:wrap;border:1px solid #e4d6c7;border-radius:12px;padding:12px}
+.detail-choices legend{font-weight:780;color:#103923;font-size:12px;padding:0 5px}
+.detail-choices label{display:flex;align-items:center;gap:5px;min-height:28px;font-size:13px}
+.detail-choices input{accent-color:#17482f}
+.detail-buttons .confirm{width:100%}
+.checkout-summary{white-space:pre-wrap;overflow-wrap:anywhere;background:#f2eadd;border-radius:12px;padding:14px;color:#234330;font:500 13px/1.7 system-ui,sans-serif}
+.checkout-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px;align-items:center}
+.checkout-actions .confirm{width:auto;padding:13px 20px}
+.checkout-actions #demo-back{border:1px solid #b49d85;background:transparent;border-radius:12px;padding:12px 17px}
+.checkout-actions .cta{font-size:13px;padding:12px}
+body.dialog-open{overflow:hidden}
+@media(min-width:680px){.detail-layout{grid-template-columns:45% 1fr;align-items:start}.detail-image{height:360px}.experience-dialog{padding:32px}}
