@@ -69,7 +69,7 @@ function addCustom(p,selection,qty){
 }
 function modal(){let el=document.getElementById('experience-modal');if(!el){el=document.createElement('div');el.id='experience-modal';el.className='experience-overlay';el.setAttribute('role','presentation');document.body.appendChild(el)}return el}
 function close(){const el=modal();el.hidden=true;el.innerHTML='';document.body.classList.remove('dialog-open');modalReturnFocus?.focus?.();modalReturnFocus=null}
-function show(html){const el=modal();modalReturnFocus=document.activeElement;el.innerHTML='<div class="experience-dialog" role="dialog" aria-modal="true"><button class="dialog-x" type="button" data-experience-close aria-label="'+t('close')+'">×</button>'+html+'</div>';el.hidden=false;document.body.classList.add('dialog-open');el.querySelector('.dialog-x')?.focus()}
+function show(html){const el=modal();if(!modalReturnFocus)modalReturnFocus=document.activeElement;el.innerHTML='<div class="experience-dialog" role="dialog" aria-modal="true"><button class="dialog-x" type="button" data-experience-close aria-label="'+t('close')+'">×</button>'+html+'</div>';el.hidden=false;document.body.classList.add('dialog-open');const heading=el.querySelector('.experience-dialog h2');if(heading){heading.id='experience-dialog-heading';el.querySelector('[role="dialog"]').setAttribute('aria-labelledby',heading.id)}el.querySelector('.dialog-x')?.focus()}
 function detail(id,selection={size:'regular',milk:'whole'},qty=1){
  const p=PRODUCTS.find(p=>p.id===id);if(!p)return;
  activeProduct=id;const current=variant(p,selection.size,selection.milk),cost=priceFor(current,p);
@@ -104,7 +104,17 @@ document.addEventListener('click',e=>{
  if(e.target.closest('#checkout')){e.preventDefault();e.stopImmediatePropagation();checkout();return}
  if(e.target.closest('[data-experience-close]')||e.target.id==='experience-modal'){e.preventDefault();close()}
 },true);
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!modal().hidden)close()});
+document.addEventListener('keydown',e=>{
+ const el=document.getElementById('experience-modal');
+ if(!el||el.hidden)return;
+ if(e.key==='Escape'){e.preventDefault();close();return}
+ if(e.key!=='Tab')return;
+ const controls=[...el.querySelectorAll('button:not(:disabled),a[href],input:not(:disabled),select:not(:disabled)')].filter(node=>node.getClientRects().length>0);
+ if(!controls.length)return;
+ const first=controls[0],last=controls[controls.length-1];
+ if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}
+ else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
+});
 window.addEventListener('coffee:language-change',()=>{if(!modal().hidden)close();document.getElementById('discovery-tools')?.remove();enhanceAfterRender()});
 window.CoffeeExperience={t,filter:getVisibleProducts,enhanceAfterRender,priceFor,variantLabel,checkout,summary};
 enhanceAfterRender();
