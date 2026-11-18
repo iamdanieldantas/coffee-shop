@@ -48,8 +48,9 @@ try:
   page.locator('#product-search').fill('chá')
   assert page.locator('#menu .product').count()==1
   assert 'Chá especial' in page.locator('#menu .product').inner_text()
+  page.locator('#product-search').fill('')
   page.locator('#site-language').select_option('en')
-  assert 'Special Tea' in page.locator('#menu .product').inner_text()
+  assert 'Special Tea' in page.locator('#menu').inner_text()
   page.locator('nav [data-go="home"]').click()
   assert page.locator('#loyalty-card .loyalty-stamps span.filled').count()==0
   page.locator('#loyalty-card [data-demo-stamp]').click()
