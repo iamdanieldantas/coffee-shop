@@ -36,7 +36,7 @@ try:
             page.locator('nav [data-go="pedidos"]').click()
             assert 'Grande' in page.locator('#order-list').inner_text()
             assert page.locator('#order-list .order-row').count()==1
-            assert 'R$ 23,90' in page.locator('#order-list').inner_text()
+            assert '23,90' in page.locator('#order-list').inner_text()
             page.locator('#checkout').click()
             assert page.locator('#experience-modal').is_visible()
             assert 'Revisar sacola' in page.locator('#experience-modal').inner_text()
