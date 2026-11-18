@@ -1,6 +1,6 @@
 /* Coffee House offline-first static assets. External APIs and credentials are never cached. */
-const CACHE='coffeehouse-v2-admin-20261118';
-const FILES=['./','./index.html','./manifest.webmanifest','./assets/styles.css','./assets/app-icon.svg','./assets/logo-approved.svg','./assets/app.js','./assets/i18n.js','./assets/likes-config.js','./assets/likes.js','./assets/social-config.js','./assets/social-footer.js','./assets/experience.js','./assets/catalog.js','./assets/loyalty.js','./assets/photos/latte.webp','./assets/photos/croissant.webp','./assets/photos/espresso.webp','./assets/photos/cappuccino.webp','./assets/photos/coldbrew.webp','./assets/photos/hero-food.webp','./assets/photos/bokeh.webp'];
+const CACHE='coffeehouse-v2-polish-20261118';
+const FILES=['./','./index.html','./manifest.webmanifest','./assets/styles.css','./assets/app-icon.svg','./assets/logo-approved.svg','./assets/app.js','./assets/i18n.js','./assets/likes-config.js','./assets/likes.js','./assets/social-config.js','./assets/social-footer.js','./assets/experience.js','./assets/catalog.js','./assets/loyalty.js','./assets/accessibility.js','./assets/photos/latte.webp','./assets/photos/croissant.webp','./assets/photos/espresso.webp','./assets/photos/cappuccino.webp','./assets/photos/coldbrew.webp','./assets/photos/hero-food.webp','./assets/photos/bokeh.webp'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('coffeehouse-')&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim()))});
 self.addEventListener('fetch',event=>{
