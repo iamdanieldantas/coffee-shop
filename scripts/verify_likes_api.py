@@ -32,7 +32,7 @@ except urllib.error.HTTPError as error:
 assert isinstance(rows, list), "RPC did not return a list"
 ids = {x.get("product_id") for x in rows}
 expected = {"espresso","latte","cappuccino","coldbrew","croissant","crocafe","cookie","mocca","sanduiche"}
-assert ids == expected, "Unexpected products in likes API response"
+assert expected.issubset(ids), "Missing original products in likes API response"
 assert all(isinstance(x["likes"], int) and x["likes"] >= 0 for x in rows), "Invalid counts"
 assert all(isinstance(x["liked"], bool) for x in rows), "Invalid liked state"
-print("OK: Supabase shared likes API, 9 products, valid public totals (read-only)")
+print("OK: Supabase shared likes API, original products and extensible catalog totals (read-only)")

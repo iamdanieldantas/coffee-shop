@@ -5,7 +5,7 @@ const categories=[{id:'bebidas',label:'Bebidas',icon:"<svg class=\"ico \" viewBo
 const ICONS={plus:"<svg class=\"ico \" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 5v14M5 12h14\"/></svg>",minus:"<svg class=\"ico \" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14\"/></svg>",tag:"<svg class=\"ico \" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3 12V4h8l10 10-7 7L3 12ZM7 8h.01\"/></svg>",chevron:"<svg class=\"ico \" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m9 6 6 6-6 6\"/></svg>",bag:"<svg class=\"ico \" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 9h14l1 12H4L5 9ZM9 10V7a3 3 0 0 1 6 0v3\"/></svg>",check:"<svg class=\"ico \" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m5 12 5 5L20 7\"/></svg>"};
 const I18N=window.CoffeeI18n;
 const t=(key,args)=>I18N.t(key,args);
-const productLabel=p=>{const translation=I18N.product(p.id);return translation?{...p,...translation}:p};
+const productLabel=p=>{const fromCatalog=window.CoffeeCatalog?.nameFor(p.id);if(fromCatalog)return {...p,...fromCatalog};const translation=I18N.product(p.id);return translation?{...p,...translation}:p};
 const format=v=>(v/100).toLocaleString(I18N.localeTag(),{style:'currency',currency:'BRL'});
 const byId=id=>PRODUCTS.find(p=>p.id===String(id).split('~')[0]);
 window.COFFEE_PRODUCT_IDS=PRODUCTS.map(p=>p.id);
@@ -42,6 +42,7 @@ function syncQuantityControls(id){
 }
 function change(id,diff){
  if(!byId(id)||![1,-1].includes(diff))return false;
+ if(diff>0&&byId(id).available===false)return false;
  const next=Math.max(0,Math.min(MAX_QUANTITY,(cart[id]||0)+diff));
  if(next===(cart[id]||0))return false;
  if(next===0)delete cart[id];else cart[id]=next;
@@ -58,10 +59,11 @@ document.addEventListener('visibilitychange',syncCarouselPlayback);
 function nav(page,updateHistory=true){if(!['home','menu','pedidos'].includes(page))return;document.querySelectorAll('.screen').forEach(el=>el.classList.toggle('active',el.id===page));document.querySelectorAll('.nav-btn').forEach(btn=>{const on=btn.dataset.go===page;btn.classList.toggle('active',on);if(on)btn.setAttribute('aria-current','page');else btn.removeAttribute('aria-current')});if(page==='pedidos')renderOrders();window.scrollTo(0,0);if(updateHistory&&location.hash!=='#'+page){try{history.pushState(null,'','#'+page)}catch(e){location.hash=page}}syncCarouselPlayback()}
 function itemCard(p){p=productLabel(p);return `<article class="product" data-product-id="${p.id}"><img alt="${p.name}" src="${IMAGES[p.img]}" loading="lazy" decoding="async"><div class="product-info"><h3>${p.name}</h3><p>${p.desc}</p><div class="product-price-row"><strong>${format(p.price)}</strong>${quantityControl(p)}</div>${window.CoffeeLikes.button(p)}</div></article>`}
 function renderFeatured(){
- const defaults=['latte','croissant','cappuccino','coldbrew'].map(byId);
+ const defaults=['latte','croissant','cappuccino','coldbrew'].map(byId).filter(p=>p&&p.available!==false);
  const likes=window.CoffeeLikes;
- const hasLikes=likes.available()&&PRODUCTS.some(p=>likes.count(p.id)>0);
- const picks=hasLikes?[...PRODUCTS].sort((a,b)=>likes.count(b.id)-likes.count(a.id)).slice(0,4):defaults;
+ const available=PRODUCTS.filter(p=>p.available!==false);
+ const hasLikes=likes.available()&&available.some(p=>likes.count(p.id)>0);
+ const picks=hasLikes?[...available].sort((a,b)=>likes.count(b.id)-likes.count(a.id)).slice(0,4):defaults;
  $('featured-heading').textContent=t(hasLikes?'hero.popular':'hero.featured');
  $('featured').innerHTML=picks.map(raw=>{const p=productLabel(raw);return `<article class="featured" data-product-id="${p.id}"><img src="${IMAGES[p.img]}" alt="${p.name}" loading="lazy" decoding="async">${likes.button(p)}<div class="featured-body"><h3>${p.name}</h3><p>${p.desc}</p><div class="price-row"><strong class="price">${format(p.price)}</strong>${quantityControl(p)}</div></div></article>`}).join('');
  window.CoffeeExperience?.enhanceAfterRender();
@@ -71,7 +73,7 @@ function renderMenu(){
  $('categories').innerHTML=categories.map(cat=>`<button type="button" class="category ${selectedCategory===cat.id?'selected':''}" data-category="${cat.id}" aria-pressed="${selectedCategory===cat.id}">${cat.icon}<span>${I18N.category(cat.id)}</span></button>`).join('');
  const likes=window.CoffeeLikes;
  $('likes-status').textContent=likes.statusText();
- let prods=PRODUCTS.filter(p=>selectedCategory==='all'||p.category===selectedCategory);
+ let prods=PRODUCTS.filter(p=>p.available!==false&&(selectedCategory==='all'||p.category===selectedCategory));
  if(window.CoffeeExperience)prods=window.CoffeeExperience.filter(prods);
  if(sortByLikes&&likes.available())prods.sort((a,b)=>likes.count(b.id)-likes.count(a.id));
  $('menu-items').innerHTML=`<div class="menu-sort"><span>${t('menu.sort')}</span><button type="button" data-sort-likes aria-pressed="${sortByLikes}" ${!likes.available()?'disabled':''} >${sortByLikes?'✓ ':''}${t('menu.popular')}</button></div><section class="menu-section"><h2 class="serif">${I18N.category(selectedCategory)}</h2><div class="menu-items">${prods.map(itemCard).join('')}</div></section>`;

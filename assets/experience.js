@@ -10,11 +10,11 @@ const messages={
 const t=k=>messages[lang()]?.[k]||messages.pt[k]||k;
 const favoritesKey='coffeehouse-favorites-v1';
 let favorites=new Set();
-try{favorites=new Set(JSON.parse(localStorage.getItem(favoritesKey)||'[]').filter(id=>typeof id==='string'&&window.COFFEE_PRODUCT_IDS?.includes(id)))}catch(_){}
+try{favorites=new Set(JSON.parse(localStorage.getItem(favoritesKey)||'[]').filter(id=>typeof id==='string'&&/^[a-z][a-z0-9-]{1,39}$/.test(id)))}catch(_){}
 let query='',sort='recommended',favoritesOnly=false,activeProduct=null,step=0,modalReturnFocus=null;
 function esc(s){return String(s).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}
-function productName(p){return window.CoffeeI18n.product(p.id)?.name||p.name}
-function productDesc(p){return window.CoffeeI18n.product(p.id)?.desc||p.desc}
+function productName(p){return window.CoffeeCatalog?.plainFor(p.id)?.name||window.CoffeeI18n.product(p.id)?.name||p.name}
+function productDesc(p){return window.CoffeeCatalog?.plainFor(p.id)?.desc||window.CoffeeI18n.product(p.id)?.desc||p.desc}
 function isDrink(p){return p.category==='bebidas'}
 function displayPrice(v){return format(v)}
 function favoriteButton(p){return '<button class="bookmark" type="button" data-favorite="'+p.id+'" aria-pressed="'+favorites.has(p.id)+'" aria-label="'+esc(favorites.has(p.id)?t('unsave'):t('save'))+' '+esc(productName(p))+'">'+(favorites.has(p.id)?'★':'☆')+'</button>'}
