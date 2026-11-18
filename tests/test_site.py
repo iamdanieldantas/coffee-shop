@@ -22,9 +22,35 @@ class SiteContract(unittest.TestCase):
   self.assertIn('function setCarouselSlide(index)',JS)
   self.assertIn('function syncCarouselPlayback()',JS)
   self.assertIn('html:not(.js-ready)',CSS)
- def test_images_embedded(self):
-  self.assertGreaterEqual((HTML+JS+CSS).count('data:image/webp;base64,'),8)
+ def test_local_optimized_images(self):
+  import json
+  self.assertNotIn('data:image/webp;base64,',HTML+JS+CSS)
+  for key in ('latte','croissant','espresso','cappuccino','coldbrew','hero-food','bokeh'):
+   file=ROOT/'assets/photos'/f'{key}.webp'
+   self.assertTrue(file.exists(),str(file))
+   self.assertEqual(file.read_bytes()[:4],b'RIFF')
+   self.assertIn(f'assets/photos/{key}.webp',JS)
+  self.assertEqual(HTML.count('src="assets/photos/'),3)
+  self.assertIn('loading="lazy"',JS)
   self.assertNotIn('images.unsplash.com',HTML+JS+CSS)
+ def test_pwa_and_seo(self):
+  import json
+  manifest=json.loads((ROOT/'manifest.webmanifest').read_text())
+  self.assertEqual(manifest['start_url'],'./')
+  self.assertEqual(manifest['scope'],'./')
+  self.assertEqual(manifest['display'],'standalone')
+  self.assertEqual(manifest['icons'][0]['purpose'],'any maskable')
+  sw=(ROOT/'sw.js').read_text()
+  self.assertIn("request.method!=='GET'",sw)
+  self.assertIn("url.origin!==self.location.origin",sw)
+  self.assertIn("caches.open(CACHE)",sw)
+  self.assertIn('assets/pwa.js',HTML)
+  self.assertIn('manifest.webmanifest',HTML)
+  self.assertIn('rel="canonical"',HTML)
+  self.assertIn('property="og:title"',HTML)
+  self.assertIn('application/ld+json',HTML)
+  self.assertIn('manifest.webmanifest',(ROOT/'scripts/build_site.py').read_text())
+
  def test_logo_and_mobile_bar(self):
   self.assertIn('brand-symbol',HTML)
   self.assertIn('Croissant e copo de café',HTML)

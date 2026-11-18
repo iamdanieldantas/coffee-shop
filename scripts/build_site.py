@@ -5,7 +5,7 @@ p=argparse.ArgumentParser();p.add_argument('--out',default='_site');args=p.parse
 root=Path(__file__).resolve().parents[1];dest=root/args.out
 if dest.exists():shutil.rmtree(dest)
 dest.mkdir(parents=True)
-for filename in ('index.html','robots.txt','.nojekyll'):shutil.copy2(root/filename,dest/filename)
+for filename in ('index.html','robots.txt','.nojekyll','sw.js','manifest.webmanifest'):shutil.copy2(root/filename,dest/filename)
 shutil.copytree(root/'assets',dest/'assets')
-assert (dest/'index.html').exists() and (dest/'assets/app.js').exists()
+assert (dest/'index.html').exists() and (dest/'assets/app.js').exists() and (dest/'sw.js').exists() and (dest/'manifest.webmanifest').exists()
 print('Site built:',dest)
