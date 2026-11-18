@@ -188,3 +188,11 @@ body.dialog-open{overflow:hidden}
 .footer-admin{color:#e4c49e;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
 .footer-admin:focus-visible{outline:2px solid #f7d1a4;outline-offset:4px}
 @media(min-width:760px){.loyalty-card{grid-template-columns:1fr 1fr;gap:40px;padding:39px}.loyalty-stamps span{height:54px}}
+
+/* Brand travel inspiration and sample ingredients. */
+.travel-inspirations{border-top:1px solid #ccb292;padding-top:15px;margin-top:19px;display:flex;flex-direction:column;gap:7px}
+.travel-inspirations p{font-size:11px!important;text-transform:uppercase;letter-spacing:.12em;color:#956e46!important;font-weight:800}
+.travel-inspirations strong{color:#103d2b;font-size:14px;line-height:1.6}
+.detail-subtitle{font-weight:800;font-size:14px;margin:15px 0 7px;color:#0d412c}
+.detail-ingredients{margin:0 0 10px;padding-left:22px;display:grid;gap:5px;font-size:13px;color:#405244}
+.detail-allergens{font-size:11px!important;color:#856c57!important}
