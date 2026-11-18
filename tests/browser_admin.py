@@ -33,12 +33,15 @@ try:
            row('latte','Latte novo','New Latte','Latte nuevo',1850,'latte'),
            row('tea','Chá especial','Special Tea','Té especial',1450,'latte')]
   def mock(route):
+   headers={'access-control-allow-origin':'*','access-control-allow-methods':'GET,POST,OPTIONS','access-control-allow-headers':'apikey,authorization,content-type'}
+   if route.request.method=='OPTIONS':
+    route.fulfill(status=204,headers=headers);return
    if '/coffee_catalog?' in route.request.url:
-    route.fulfill(status=200,body=json.dumps(catalog),content_type='application/json')
+    route.fulfill(status=200,headers=headers,body=json.dumps(catalog),content_type='application/json')
    elif '/coffee_likes_snapshot' in route.request.url:
-    route.fulfill(status=200,body=json.dumps([{'product_id':x['product_id'],'likes':0,'liked':False} for x in catalog]),content_type='application/json')
+    route.fulfill(status=200,headers=headers,body=json.dumps([{'product_id':x['product_id'],'likes':0,'liked':False} for x in catalog]),content_type='application/json')
    else:
-    route.fulfill(status=404,body='{}',content_type='application/json')
+    route.fulfill(status=404,headers=headers,body='{}',content_type='application/json')
   page.route('https://jasnepwcihsuvelwcmvu.supabase.co/**',mock)
   page.goto(base+'/',wait_until='load')
   page.wait_for_function("window.CoffeeCatalog.status() === 'live'")
