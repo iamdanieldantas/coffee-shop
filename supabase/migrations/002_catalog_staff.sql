@@ -18,7 +18,8 @@ as $$
   );
 $$;
 revoke all on function public.coffee_is_admin() from public, anon, authenticated;
-grant execute on function public.coffee_is_admin() to authenticated;
+-- Returns false for unauthenticated users; safe for public catalog RLS policies.
+grant execute on function public.coffee_is_admin() to anon, authenticated;
 
 create table if not exists public.coffee_catalog (
   product_id text primary key check (product_id ~ '^[a-z][a-z0-9-]{1,39}$'),
